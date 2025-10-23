@@ -30,7 +30,7 @@
   <distributionManagement>
     <repository>
       <id>github</id>
-      <name>GitHub Packages</name>
+      <name>GitHub RolePlay-Cauldron Apache Maven Packages</name>
       <url>https://maven.pkg.github.com/RolePlay-Cauldron/Spellbook</url>
     </repository>
   </distributionManagement>
