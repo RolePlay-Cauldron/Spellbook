@@ -6,4 +6,4 @@ before_install:
   - echo "Setting project version to: $VERSION_STRIPPED"
   - mvn -B -ntp -q versions:set -DnewVersion=${VERSION_STRIPPED} -DprocessAllModules=true -DgenerateBackupPoms=false
 install:
-  - mvn -B -ntp -DskipTests install
+  - mvn -B -ntp install
