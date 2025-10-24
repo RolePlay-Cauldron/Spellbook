@@ -6,8 +6,6 @@ Libraries for common code between our Minecraft Paper Plugins
 
 This project requires **Java 21+** as well as **Paper**, currently in the **1.21.1** version.
 
-The 
-
 ## Modules
 
 __**Spellbook-Core:**__ Basic Utilities
@@ -18,6 +16,8 @@ __**Spellbook-Core:**__ Basic Utilities
 __**Spellbook-Database:**__ Database Utilities
 
 - Coming soon
+
+---
 
 ## Using this in your project
 
@@ -44,7 +44,7 @@ We release this project to **GitHub Packages** but also enable [jitpack.io](http
   <repository>
     <id>github</id>
     <name>GitHub Packages</name>
-    <url>https://maven.pkg.github.com/RolePlayCauldron/Spellbook</url>
+    <url>https://maven.pkg.github.com/RolePlay-Cauldron/Spellbook</url>
   </repository>
 </repositories>
 ```
