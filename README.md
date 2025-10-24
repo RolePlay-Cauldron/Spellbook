@@ -71,12 +71,12 @@ Only choose the dependencies that you want
 ```xml
 <dependencies>
   <dependency>
-    <groupId>com.github.roleplaycauldron</groupId>
+    <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook-core</artifactId>
     <version>0.0.1</version>
   </dependency>
   <dependency>
-    <groupId>com.github.roleplaycauldron</groupId>
+    <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook-database</artifactId>
     <version>0.0.1</version>
   </dependency>
