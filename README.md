@@ -27,18 +27,22 @@ We release this project to **GitHub Packages** but also enable [jitpack.io](http
 
 ### Adding the **GitHub Packages** Repository
 
-1) Configure your Maven `settings.xml` with credentials:
+1) Configure your Maven `~/.m2/settings.xml` with credentials. Create your Token (classic) [here](https://github.com/settings/tokens), you only require the `read:packages` scope
 ```xml
-<servers>
-  <server>
-    <id>github</id>
-    <username>YOUR_GH_USERNAME</username>
-    <password>YOUR_GITHUB_TOKEN</password>
-  </server>
-</servers>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+      <server>
+        <id>github</id>
+        <username>YOUR_GH_USERNAME</username>
+        <password>YOUR_GITHUB_TOKEN</password>
+      </server>
+  </servers>
+</settings>
 ```
 
-2) Add the repository to your plugins `pom.xml`:
+2) Add the repository to your plugins `pom.xml`
 ```xml
 <repositories>
   <repository>
@@ -51,7 +55,7 @@ We release this project to **GitHub Packages** but also enable [jitpack.io](http
 
 ### Adding the **jitpack.io** Repository
 
-1) Add the repository to your plugins `pom.xml`:
+1) Add the repository to your plugins `pom.xml`
 ```xml
 <repositories>
   <repository>
