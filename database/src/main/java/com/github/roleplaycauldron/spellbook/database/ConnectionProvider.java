@@ -1,6 +1,6 @@
 package com.github.roleplaycauldron.spellbook.database;
 
-import java.sql.Connection;
+import java.sql.*;
 
 /**
  * General contract for a ConnectionProvider which might be implemented by a ConnectionPool
@@ -12,6 +12,7 @@ public interface ConnectionProvider {
      * Returns a Database Connection
      *
      * @return a Database Connection
+     * @throws SQLException thrown by the underlying JDBC Connector
      */
-    Connection getConnection();
+    Connection getConnection() throws SQLException;
 }

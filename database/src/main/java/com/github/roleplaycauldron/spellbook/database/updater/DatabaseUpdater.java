@@ -30,7 +30,7 @@ public class DatabaseUpdater {
      * @param versionTableName the name of the table that will track the version changes.
      *                         You should give this a unique name and not rename it.
      *                         This table is used to track which version the database currently conforms to.
-     *                         A good example might be 'myplugin_version'
+     *                         A good example might be 'myplugin_schema-version'
      */
     public DatabaseUpdater(WrappedLogger log, ConnectionProvider connectionProvider,
                            VersionRepository versionRepository, String versionTableName) {
@@ -105,6 +105,12 @@ public class DatabaseUpdater {
 
     private int getCurrentVersion() throws DatabaseUpdateException {
         try (Connection connection = connectionProvider.getConnection()) {
+            try (ResultSet tables = connection.getMetaData().getTables(null, null, versionTableName, null)) {
+                if (!tables.next()) {
+                    return 0;
+                }
+            }
+
             String sql = "SELECT MAX(t.version_no) as curr_ver FROM " + versionTableName + " t";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 ResultSet resultSet = statement.executeQuery();
