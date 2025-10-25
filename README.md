@@ -15,7 +15,9 @@ __**Spellbook-Core:**__ Basic Utilities
 
 __**Spellbook-Database:**__ Database Utilities
 
-- Coming soon
+- Database Updater (Automatic Schema Migrations)
+
+Remember to bring your own Database Driver!
 
 ---
 
