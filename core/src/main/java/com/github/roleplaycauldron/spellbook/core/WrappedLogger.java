@@ -73,7 +73,7 @@ public class WrappedLogger {
      * A wrapper for {@link Logger#log(Level, String)} with {@link Level#INFO}
      * that calls {@link String#format(String, Object...)} for you<br>
      * <br>
-     * Debug Logs are only send if {@link WrappedLogger#isDebug} is set to true, see {@link WrappedLogger#setDebug(boolean)}
+     * Debug Logs are only sent if {@link WrappedLogger#isDebug} is set to true, see {@link WrappedLogger#setDebug(boolean)}
      *
      * @param message log message format
      * @param args arguments for {@link String#format(String, Object...)}
