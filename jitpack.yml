@@ -1,5 +1,7 @@
 jdk:
   - openjdk21
+maven:
+  version: 3.9.6
 before_install:
   - "echo 'JitPack VERSION env: $VERSION'"
   - "VERSION_STRIPPED=${VERSION#v}"
