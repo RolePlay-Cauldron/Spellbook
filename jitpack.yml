@@ -1,11 +1,9 @@
 jdk:
   - openjdk21
-maven:
-  version: 3.9.6
 before_install:
   - "echo 'JitPack VERSION env: $VERSION'"
   - "VERSION_STRIPPED=${VERSION#v}"
   - "echo 'Setting project version to: '$VERSION_STRIPPED"
   - "mvn -B -ntp -q versions:set -DnewVersion=$VERSION_STRIPPED -DprocessAllModules=true -DgenerateBackupPoms=false"
 install:
-  - "mvn -B -ntp install"
+  - "mvn -B -ntp install -Dmaven.javadoc.skip=true"
