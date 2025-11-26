@@ -1,6 +1,9 @@
 jdk:
   - openjdk21
 before_install:
+  - "sdk install maven 3.9.6"
+  - "sdk use maven 3.9.6"
+  - "mvn -version"
   - "echo 'JitPack VERSION env: $VERSION'"
   - "VERSION_STRIPPED=${VERSION#v}"
   - "echo 'Setting project version to: '$VERSION_STRIPPED"
