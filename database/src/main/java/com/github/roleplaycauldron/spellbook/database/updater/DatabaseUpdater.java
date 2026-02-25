@@ -1,6 +1,6 @@
 package com.github.roleplaycauldron.spellbook.database.updater;
 
-import com.github.roleplaycauldron.spellbook.core.WrappedLogger;
+import com.github.roleplaycauldron.spellbook.core.logger.WrappedLoggerInterface;
 import com.github.roleplaycauldron.spellbook.database.ConnectionProvider;
 
 import java.sql.Connection;
@@ -16,9 +16,12 @@ import java.util.List;
  */
 public class DatabaseUpdater {
 
-    private final WrappedLogger log;
+    private final WrappedLoggerInterface log;
+
     private final ConnectionProvider connectionProvider;
+
     private final VersionRepository versionRepository;
+
     private final String versionTableName;
 
     /**
@@ -32,7 +35,7 @@ public class DatabaseUpdater {
      *                         This table is used to track which version the database currently conforms to.
      *                         A good example might be 'myplugin_schema-version'
      */
-    public DatabaseUpdater(WrappedLogger log, ConnectionProvider connectionProvider,
+    public DatabaseUpdater(WrappedLoggerInterface log, ConnectionProvider connectionProvider,
                            VersionRepository versionRepository, String versionTableName) {
         this.log = log;
         this.connectionProvider = connectionProvider;
