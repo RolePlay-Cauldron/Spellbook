@@ -7,7 +7,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * An easy-to-use Scheduler that makes running Tasks asynchronously a breeze!
+ * A simple implementation of the {@link SimpleScheduler} interface for Velocity,
+ * facilitating the asynchronous execution of tasks using a Velocity {@link Scheduler}.
  */
 public class SimpleVelocityScheduler implements SimpleScheduler {
 

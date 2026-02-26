@@ -10,7 +10,7 @@ import java.util.logging.Level;
 public interface WrappedLogger {
 
     /**
-     * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
+     * A wrapper for a Logger with {@link Level#INFO}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
@@ -19,7 +19,7 @@ public interface WrappedLogger {
     void infoF(String message, Object... args);
 
     /**
-     * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#WARNING}
+     * A wrapper for a Logger with {@link Level#WARNING}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
@@ -28,7 +28,7 @@ public interface WrappedLogger {
     void warnF(String message, Object... args);
 
     /**
-     * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#SEVERE}
+     * A wrapper for a Logger with {@link Level#SEVERE}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
@@ -37,7 +37,7 @@ public interface WrappedLogger {
     void errorF(String message, Object... args);
 
     /**
-     * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
+     * A wrapper for a Logger with {@link Level#INFO}
      * that calls {@link String#format(String, Object...)} for you<br>
      * <br>
      * Debug Logs are only sent if a custom debug flag is set to {@code true}, see {@link LoggerFactory#setDebug(boolean)}
