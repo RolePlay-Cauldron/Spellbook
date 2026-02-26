@@ -1,51 +1,31 @@
 package com.github.roleplaycauldron.spellbook.core.scheduler;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * An easy-to-use Scheduler that makes running Tasks asynchronously a breeze!
+ * Defines an interface for a simple scheduler that allows executing tasks asynchronously.
+ * This interface provides methods to run both {@link Callable} and {@link Runnable} tasks,
+ * returning a {@link CompletableFuture} to handle the results or exceptions.
  */
-public class SimpleScheduler implements SimpleSchedulerInterface {
-
-    private final JavaPlugin plugin;
+public interface SimpleScheduler {
 
     /**
-     * Create a new {@link SimpleScheduler}
+     * Runs the given callable asynchronously and returns a CompletableFuture
+     * that will be completed with the result or exceptionally if an error occurs.
      *
-     * @param plugin the Main class of the Plugin using this Scheduler
+     * @param callable the Task to asynchronously execute
+     * @return A {@link CompletableFuture} of the Tasks return value
+     * @param <T> the Tasks return values type
      */
-    public SimpleScheduler(JavaPlugin plugin) {
-        this.plugin = plugin;
-    }
+    <T> CompletableFuture<T> runTaskAsync(Callable<T> callable);
 
-    @Override
-    public <T> CompletableFuture<T> runTaskAsync(Callable<T> callable) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                T result = callable.call();
-                future.complete(result);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        });
-        return future;
-    }
-
-    @Override
-    public CompletableFuture<Void> runTaskAsync(Runnable runnable) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            try {
-                runnable.run();
-                future.complete(null);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        });
-        return future;
-    }
+    /**
+     * Runs the given runnable asynchronously and returns a CompletableFuture
+     * that will be completed when the task finishes.
+     *
+     * @param runnable the Task to asynchronously execute
+     * @return A {@link CompletableFuture} without a return value
+     */
+    CompletableFuture<Void> runTaskAsync(Runnable runnable);
 }
