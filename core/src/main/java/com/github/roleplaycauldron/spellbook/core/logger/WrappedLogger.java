@@ -14,34 +14,34 @@ public interface WrappedLogger {
      * @param debug true activates debug mode, false deactivates debug mode
      * @see JavaUtilWrappedLogger#debugF(String, Object...)
      */
-    public void setDebug(boolean debug);
+    void setDebug(boolean debug);
 
     /**
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
-     * @param args arguments for {@link String#format(String, Object...)}
+     * @param args    arguments for {@link String#format(String, Object...)}
      */
-    public void infoF(String message, Object... args);
+    void infoF(String message, Object... args);
 
     /**
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#WARNING}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
-     * @param args arguments for {@link String#format(String, Object...)}
+     * @param args    arguments for {@link String#format(String, Object...)}
      */
-    public void warnF(String message, Object... args);
+    void warnF(String message, Object... args);
 
     /**
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#SEVERE}
      * that calls {@link String#format(String, Object...)} for you
      *
      * @param message log message format
-     * @param args arguments for {@link String#format(String, Object...)}
+     * @param args    arguments for {@link String#format(String, Object...)}
      */
-    public void errorF(String message, Object... args);
+    void errorF(String message, Object... args);
 
     /**
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
@@ -50,8 +50,8 @@ public interface WrappedLogger {
      * Debug Logs are only sent if a custom debug flag is set to {@code true}, see {@link JavaUtilWrappedLogger#setDebug(boolean)}
      *
      * @param message log message format
-     * @param args arguments for {@link String#format(String, Object...)}
+     * @param args    arguments for {@link String#format(String, Object...)}
      * @see JavaUtilWrappedLogger#setDebug(boolean)
      */
-    public void debugF(String message, Object... args);
+    void debugF(String message, Object... args);
 }
