@@ -6,7 +6,7 @@
 
   <groupId>com.github.roleplay-cauldron</groupId>
   <artifactId>spellbook</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.5-alpha</version>
   <packaging>pom</packaging>
 
   <name>RolePlay Cauldron Spellbook</name>
