@@ -62,7 +62,7 @@ public class LoggerFactory {
         if (slf4jLogger != null) {
             return new Slf4jWrappedLogger(slf4jLogger, topic);
         } else if (javaUtilLogger != null) {
-            return new JavaUtilWrappedLogger(javaUtilLogger, topic);
+            return new JavaUtilWrappedLogger(javaUtilLogger, clazz, topic);
         } else {
             throw new WrappedLoggerException("Unable to create logger: No SLF4J or Java Util Logger available");
         }

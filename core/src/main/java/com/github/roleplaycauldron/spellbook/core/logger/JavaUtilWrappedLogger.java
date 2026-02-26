@@ -8,7 +8,11 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- * A Logger providing better logging methods as well as Debug logging
+ * A wrapper for {@link Logger} that provides enhanced functionality such as formatted logging,
+ * debug mode handling, and the ability to associate log messages with specific topics using {@link TopicLogger}.
+ * <br>
+ * Implements the {@link WrappedLogger} interface to provide consistent logging methods
+ * such as info, warn, error, and debug, each of which supports string formatting.
  */
 public class JavaUtilWrappedLogger implements WrappedLogger {
 
@@ -26,9 +30,11 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
      * Creates a new {@link JavaUtilWrappedLogger}
      *
      * @param logger the {@link Logger} this Wrapper works on
+     * @param clazz  the class this logger is used for
+     * @param topic  the topic of this logger
      */
-    public JavaUtilWrappedLogger(Logger logger, String topic) {
-        this.logger = new TopicLogger(logger, this.getClass(), topic);
+    public JavaUtilWrappedLogger(Logger logger, final Class<?> clazz, String topic) {
+        this.logger = new TopicLogger(logger, clazz, topic);
     }
 
     @Override
@@ -66,7 +72,7 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
      * It serves as a subordinate logger to a parent {@link Logger} and includes initialization
      * logic to configure logging levels and hierarchical relationships to the parent logger.
      */
-    private class TopicLogger extends Logger {
+    private static class TopicLogger extends Logger {
         /**
          * The topic of this logger.
          */
