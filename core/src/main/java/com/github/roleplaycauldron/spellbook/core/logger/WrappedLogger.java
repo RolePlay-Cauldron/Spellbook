@@ -8,13 +8,6 @@ import java.util.logging.Level;
  * and includes a special method for debug logging which can be conditionally enabled.
  */
 public interface WrappedLogger {
-    /**
-     * (De-)activated the Debug Mode for this Logger. See {@link JavaUtilWrappedLogger#debugF(String, Object...)}
-     *
-     * @param debug true activates debug mode, false deactivates debug mode
-     * @see JavaUtilWrappedLogger#debugF(String, Object...)
-     */
-    void setDebug(boolean debug);
 
     /**
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
@@ -47,11 +40,11 @@ public interface WrappedLogger {
      * A wrapper for {@link java.util.logging.Logger#log(Level, String)} with {@link Level#INFO}
      * that calls {@link String#format(String, Object...)} for you<br>
      * <br>
-     * Debug Logs are only sent if a custom debug flag is set to {@code true}, see {@link JavaUtilWrappedLogger#setDebug(boolean)}
+     * Debug Logs are only sent if a custom debug flag is set to {@code true}, see {@link LoggerFactory#setDebug(boolean)}
      *
      * @param message log message format
      * @param args    arguments for {@link String#format(String, Object...)}
-     * @see JavaUtilWrappedLogger#setDebug(boolean)
+     * @see LoggerFactory#setDebug(boolean)
      */
     void debugF(String message, Object... args);
 }

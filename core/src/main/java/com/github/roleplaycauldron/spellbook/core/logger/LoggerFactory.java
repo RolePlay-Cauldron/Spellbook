@@ -1,5 +1,7 @@
 package com.github.roleplaycauldron.spellbook.core.logger;
 
+import java.util.concurrent.atomic.*;
+
 /**
  * A factory class for creating instances of {@link WrappedLogger}.
  * It supports either SLF4J or Java Util Logging implementations as the underlying logging framework.
@@ -11,6 +13,18 @@ public class LoggerFactory {
     private java.util.logging.Logger javaUtilLogger;
 
     private org.slf4j.Logger slf4jLogger;
+
+    private final AtomicBoolean isDebug = new AtomicBoolean(false);
+
+    /**
+     * (De-)activated the Debug Mode for this Logger. See {@link JavaUtilWrappedLogger#debugF(String, Object...)}
+     *
+     * @param debug true activates debug mode, false deactivates debug mode
+     * @see WrappedLogger#debugF(String, Object...)
+     */
+    public void setDebug(boolean debug) {
+        this.isDebug.set(debug);
+    }
 
     /**
      * Constructs a LoggerFactory using the specified Java Util Logging logger.
@@ -60,9 +74,9 @@ public class LoggerFactory {
      */
     public WrappedLogger create(final Class<?> clazz, final String topic) {
         if (slf4jLogger != null) {
-            return new Slf4jWrappedLogger(slf4jLogger, topic);
+            return new Slf4jWrappedLogger(slf4jLogger, topic, isDebug);
         } else if (javaUtilLogger != null) {
-            return new JavaUtilWrappedLogger(javaUtilLogger, clazz, topic);
+            return new JavaUtilWrappedLogger(javaUtilLogger, clazz, topic, isDebug);
         } else {
             throw new WrappedLoggerException("Unable to create logger: No SLF4J or Java Util Logger available");
         }

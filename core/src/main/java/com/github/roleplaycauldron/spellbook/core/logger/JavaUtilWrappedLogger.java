@@ -3,6 +3,7 @@ package com.github.roleplaycauldron.spellbook.core.logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.*;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -24,22 +25,19 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
     /**
      * Flag for debug mode
      */
-    private boolean isDebug = false;
+    private final AtomicBoolean isDebug;
 
     /**
      * Creates a new {@link JavaUtilWrappedLogger}
      *
-     * @param logger the {@link Logger} this Wrapper works on
-     * @param clazz  the class this logger is used for
-     * @param topic  the topic of this logger
+     * @param logger  the {@link Logger} this Wrapper works on
+     * @param clazz   the class this logger is used for
+     * @param topic   the topic of this logger
+     * @param isDebug the debug flag
      */
-    public JavaUtilWrappedLogger(Logger logger, final Class<?> clazz, String topic) {
+    public JavaUtilWrappedLogger(Logger logger, final Class<?> clazz, String topic, AtomicBoolean isDebug) {
         this.logger = new TopicLogger(logger, clazz, topic);
-    }
-
-    @Override
-    public void setDebug(boolean debug) {
-        this.isDebug = debug;
+        this.isDebug = isDebug;
     }
 
     @Override
@@ -59,7 +57,7 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
 
     @Override
     public void debugF(String message, Object... args) {
-        if (isDebug) {
+        if (isDebug.get()) {
             logger.log(Level.INFO, "[Debug] " + String.format(message, args));
         }
     }

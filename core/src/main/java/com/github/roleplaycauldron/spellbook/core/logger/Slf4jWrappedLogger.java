@@ -1,5 +1,7 @@
 package com.github.roleplaycauldron.spellbook.core.logger;
 
+import java.util.concurrent.atomic.*;
+
 import org.slf4j.Logger;
 
 /**
@@ -27,16 +29,19 @@ public class Slf4jWrappedLogger implements WrappedLogger {
     /**
      * Flag for debug mode
      */
-    private boolean isDebug = false;
+    private final AtomicBoolean isDebug;
 
-    public Slf4jWrappedLogger(Logger logger, final String topic) {
+    /**
+     * Creates a new {@link Slf4jWrappedLogger}
+     *
+     * @param logger  the {@link Logger} this Wrapper works on
+     * @param topic   the topic of this logger
+     * @param isDebug the debug flag
+     */
+    public Slf4jWrappedLogger(Logger logger, final String topic, AtomicBoolean isDebug) {
         this.logger = logger;
         this.topic = topic == null || topic.isEmpty() ? "" : "(" + topic + ") ";
-    }
-
-    @Override
-    public void setDebug(boolean debug) {
-        this.isDebug = debug;
+        this.isDebug = isDebug;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class Slf4jWrappedLogger implements WrappedLogger {
 
     @Override
     public void debugF(String message, Object... args) {
-        if (isDebug) {
+        if (isDebug.get()) {
             logger.info(EMPTY_FORMAT, topic, "[Debug] " + String.format(message, args));
         }
     }
