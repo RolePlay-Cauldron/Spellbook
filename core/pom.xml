@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.5-alpha</version>
   </parent>
 
   <artifactId>spellbook-core</artifactId>
@@ -28,6 +28,16 @@
     <dependency>
       <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.velocitypowered</groupId>
+      <artifactId>velocity-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.md-5</groupId>
+      <artifactId>bungeecord-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

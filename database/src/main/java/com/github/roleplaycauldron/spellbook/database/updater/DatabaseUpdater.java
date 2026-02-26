@@ -1,6 +1,6 @@
 package com.github.roleplaycauldron.spellbook.database.updater;
 
-import com.github.roleplaycauldron.spellbook.core.WrappedLogger;
+import com.github.roleplaycauldron.spellbook.core.logger.WrappedLogger;
 import com.github.roleplaycauldron.spellbook.database.ConnectionProvider;
 
 import java.sql.Connection;
@@ -17,8 +17,11 @@ import java.util.List;
 public class DatabaseUpdater {
 
     private final WrappedLogger log;
+
     private final ConnectionProvider connectionProvider;
+
     private final VersionRepository versionRepository;
+
     private final String versionTableName;
 
     /**

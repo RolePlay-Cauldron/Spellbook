@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.5-alpha</version>
   </parent>
 
   <artifactId>spellbook-database</artifactId>
@@ -28,12 +28,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.papermc.paper</groupId>
-      <artifactId>paper-api</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
