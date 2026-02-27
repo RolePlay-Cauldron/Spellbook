@@ -93,6 +93,30 @@ public class FileBackupService {
     }
 
     /**
+     * Initiates the backup process by generating a backup file name based on the current date and time,
+     * formatted as "yyyy-MM-dd_HH-mm-ss", and delegating the backup creation to the overloaded
+     * {@link #startBackup(String backupFileName)} method.
+     * <p>
+     * The generated backup file will have a ".zip" extension and will include the current timestamp
+     * in its name to prevent naming conflicts and ensure uniqueness.
+     * <p>
+     * Exception Handling:
+     * - A {@link FileException} is thrown if an error occurs during the backup creation process.
+     * <p>
+     * Prerequisites:
+     * - The `backupDirectory` must be set as the location for saving the generated backup file.
+     * - The list of files to back up must already be populated, as managed by the {@link #addFileToBackup(File)} method.
+     * <p>
+     * @throws FileException: If an issue occurs during the backup process, such as problems with file I/O.
+     */
+    public void startBackup() throws FileException {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+        final String currentDate = LocalDateTime.now().format(formatter);
+
+        startBackup(String.format("%s_Backup.zip", currentDate));
+    }
+
+    /**
      * Initiates the backup process, creating a compressed archive of the specified files and managing backup retention.
      * <p>
      * This method performs the following steps:
@@ -103,7 +127,7 @@ public class FileBackupService {
      * 4. Logs a message upon successful creation of the backup file.
      * 5. Deletes files from the backup list after completion of the backup process.
      *    - If a file cannot be deleted, an error message is logged.
-     * 6. Calls the {@code manageBackupRetention()} method to manage old backups based on the configured retention policy.
+     * 6. Calls the {@link #manageBackupRetention()} method to manage old backups based on the configured retention policy.
      * <p>
      * Logging:
      * - Logs informational messages at the start and completion of the backup process.
@@ -114,18 +138,20 @@ public class FileBackupService {
      * - The `backupFiles` list must contain the files to be included in the backup archive.
      * - Proper permissions must be in place to read the files in `backupFiles` and write to the `backupDirectory`.
      * <p>
-     * Exceptions:
-     * - Throws {@link FileException} if an error occurs during the backup creation process.
+     * @param backupFileName the name of the backup file to be created. It must be a valid file name and cannot be null or empty.
+     * @throws FileException if an I/O issue occurs during the creation of the backup file.
      */
-    public void startBackup() throws FileException {
+    public void startBackup(String backupFileName) throws FileException {
         if (backupFiles.isEmpty()) {
             return;
         }
         log.infoF("Starting Backup Process...");
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
-        final String currentDate = LocalDateTime.now().format(formatter);
-        final File backupFile = new File(backupDirectory, currentDate + " Backup" + ".zip");
+        if (!backupFileName.contains(".zip")) {
+            backupFileName = String.format("%s.zip", backupFileName);
+        }
+
+        final File backupFile = new File(backupDirectory, backupFileName);
 
         try {
             zipFiles(backupFile);
