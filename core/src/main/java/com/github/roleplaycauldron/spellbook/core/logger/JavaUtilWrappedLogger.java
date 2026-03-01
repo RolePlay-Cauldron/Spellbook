@@ -41,6 +41,50 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
     }
 
     @Override
+    public void info(String message) {
+        logger.log(Level.INFO, message);
+    }
+
+    @Override
+    public void warn(String message) {
+        logger.log(Level.WARNING, message);
+    }
+
+    @Override
+    public void error(String message) {
+        logger.log(Level.SEVERE, message);
+    }
+
+    @Override
+    public void debug(String message) {
+        if (isDebug.get()) {
+            logger.log(Level.INFO, "[Debug] " + message);
+        }
+    }
+
+    @Override
+    public void info(String message, Throwable throwable) {
+        logger.log(Level.INFO, message, throwable);
+    }
+
+    @Override
+    public void warn(String message, Throwable throwable) {
+        logger.log(Level.WARNING, message, throwable);
+    }
+
+    @Override
+    public void error(String message, Throwable throwable) {
+        logger.log(Level.SEVERE, message, throwable);
+    }
+
+    @Override
+    public void debug(String message, Throwable throwable) {
+        if (isDebug.get()) {
+            logger.log(Level.INFO, "[Debug] " + message, throwable);
+        }
+    }
+
+    @Override
     public void infoF(String message, Object... args) {
         logger.log(Level.INFO, String.format(message, args));
     }
@@ -60,6 +104,11 @@ public class JavaUtilWrappedLogger implements WrappedLogger {
         if (isDebug.get()) {
             logger.log(Level.INFO, "[Debug] " + String.format(message, args));
         }
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return isDebug.get();
     }
 
     /**
