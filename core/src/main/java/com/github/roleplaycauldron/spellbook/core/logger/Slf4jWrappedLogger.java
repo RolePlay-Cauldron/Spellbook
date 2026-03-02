@@ -45,6 +45,50 @@ public class Slf4jWrappedLogger implements WrappedLogger {
     }
 
     @Override
+    public void info(String message) {
+        logger.info(EMPTY_FORMAT, topic, message);
+    }
+
+    @Override
+    public void warn(String message) {
+        logger.warn(EMPTY_FORMAT, topic, message);
+    }
+
+    @Override
+    public void error(String message) {
+        logger.error(EMPTY_FORMAT, topic, message);
+    }
+
+    @Override
+    public void debug(String message) {
+        if (isDebug.get()) {
+            logger.info(EMPTY_FORMAT, topic, "[Debug] " + message);
+        }
+    }
+
+    @Override
+    public void info(String message, Throwable throwable) {
+        logger.info(EMPTY_FORMAT, topic, message, throwable);
+    }
+
+    @Override
+    public void warn(String message, Throwable throwable) {
+        logger.warn(EMPTY_FORMAT, topic, message, throwable);
+    }
+
+    @Override
+    public void error(String message, Throwable throwable) {
+        logger.error(EMPTY_FORMAT, topic, message, throwable);
+    }
+
+    @Override
+    public void debug(String message, Throwable throwable) {
+        if (isDebug.get()) {
+            logger.info(EMPTY_FORMAT, topic, "[Debug] " + message);
+        }
+    }
+
+    @Override
     public void infoF(String message, Object... args) {
         logger.info(EMPTY_FORMAT, topic, String.format(message, args));
     }
@@ -64,5 +108,10 @@ public class Slf4jWrappedLogger implements WrappedLogger {
         if (isDebug.get()) {
             logger.info(EMPTY_FORMAT, topic, "[Debug] " + String.format(message, args));
         }
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return isDebug.get();
     }
 }
