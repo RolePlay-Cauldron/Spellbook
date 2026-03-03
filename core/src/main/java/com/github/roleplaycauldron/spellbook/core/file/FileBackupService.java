@@ -107,7 +107,7 @@ public class FileBackupService {
      * - The `backupDirectory` must be set as the location for saving the generated backup file.
      * - The list of files to back up must already be populated, as managed by the {@link #addFileToBackup(File)} method.
      * <p>
-     * @throws FileException: If an issue occurs during the backup process, such as problems with file I/O.
+     * @throws FileException if an issue occurs during the backup process, such as problems with file I/O.
      */
     public void startBackup() throws FileException {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
