@@ -24,6 +24,8 @@ public class DatabaseUpdater {
 
     private final String versionTableName;
 
+    private final boolean firstStartup;
+
     /**
      * Creates a new {@link DatabaseUpdater}
      *
@@ -41,6 +43,30 @@ public class DatabaseUpdater {
         this.connectionProvider = connectionProvider;
         this.versionRepository = versionRepository;
         this.versionTableName = versionTableName;
+        this.firstStartup = false;
+    }
+
+    /**
+     * Creates a new {@link DatabaseUpdater}
+     *
+     * @param log a Logger to inform about the Updaters Actions
+     * @param connectionProvider the {@link ConnectionProvider} providing the Database Connections
+     * @param versionRepository the {@link VersionRepository} containing all applicable {@link DatabaseVersion}s
+     * @param versionTableName the name of the table that will track the version changes.
+     *                         You should give this a unique name and not rename it.
+     *                         This table is used to track which version the database currently conforms to.
+     *                         A good example might be 'myplugin_schema-version'
+     * @param firstStartup {@code true} if this is the first startup of your whole plugin on your server.
+     *                         No migration will be applied. If {@code false}, the migration process will be started normaly when you use {@link #checkAndApplyUpdates()}.
+     */
+    public DatabaseUpdater(WrappedLogger log, ConnectionProvider connectionProvider,
+                           VersionRepository versionRepository, String versionTableName,
+                           boolean firstStartup) {
+        this.log = log;
+        this.connectionProvider = connectionProvider;
+        this.versionRepository = versionRepository;
+        this.versionTableName = versionTableName;
+        this.firstStartup = firstStartup;
     }
 
     /**
@@ -50,6 +76,13 @@ public class DatabaseUpdater {
      * @throws DatabaseUpdateException thrown if a hard error occurs
      */
     public boolean checkAndApplyUpdates() throws DatabaseUpdateException {
+        if (firstStartup) {
+            if (performFirstStartup()) {
+                return true;
+            }
+            log.errorF("Failed to perform first startup. Aborting all further upgrades.");
+            return false;
+        }
         int currVer = getCurrentVersion();
         int maxVer = versionRepository.getMaxVersion();
         if (currVer >= maxVer) {
@@ -87,23 +120,43 @@ public class DatabaseUpdater {
                     return false;
                 }
             }
-
-            String protocolSql = "INSERT INTO " + versionTableName + " (version_no) VALUES (?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(protocolSql)) {
-                preparedStatement.setInt(1, dbVer.getVersionNumber());
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                connection.rollback();
-                log.errorF("Error inserting the upgrade protocol for version %d: %s", dbVer.getVersionNumber(), e.getMessage());
+            if(!updateVersionIndex(connection, dbVer.getVersionNumber())) {
                 return false;
             }
-
             connection.commit();
             return true;
         } catch (SQLException e) {
             log.errorF("Error updating to Version %d: %s", dbVer.getVersionNumber(), e.getMessage());
             return false;
         }
+    }
+
+    private boolean performFirstStartup() {
+        int maxVersion = versionRepository.getMaxVersion();
+        try (Connection connection = connectionProvider.getConnection()) {
+            connection.setAutoCommit(false);
+            if (updateVersionIndex(connection, maxVersion)) {
+                connection.commit();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            log.errorF("Error updating to Version %d: %s", maxVersion, e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean updateVersionIndex(Connection connection, int versionNumber) throws SQLException {
+        String protocolSql = "INSERT INTO " + versionTableName + " (version_no) VALUES (?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(protocolSql)) {
+            preparedStatement.setInt(1, versionNumber);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            connection.rollback();
+            log.errorF("Error inserting the upgrade protocol for version %d: %s", versionNumber, e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     private int getCurrentVersion() throws DatabaseUpdateException {
