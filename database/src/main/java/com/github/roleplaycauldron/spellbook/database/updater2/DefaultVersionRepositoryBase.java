@@ -1,6 +1,6 @@
 package com.github.roleplaycauldron.spellbook.database.updater2;
 
-import java.util.*;
+import java.util.List;
 
 public class DefaultVersionRepositoryBase extends VersionRepositoryBase {
 

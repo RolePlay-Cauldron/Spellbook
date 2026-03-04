@@ -1,9 +1,10 @@
 package com.github.roleplaycauldron.spellbook.database.updater2;
 
-import java.util.*;
-import java.util.function.*;
+import com.github.roleplaycauldron.spellbook.database.updater2.builder.VersionListBuilder;
 
-import com.github.roleplaycauldron.spellbook.database.updater2.builder.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class VersionRepositoryBase {
 
