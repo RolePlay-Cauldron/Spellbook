@@ -33,6 +33,8 @@ public class VersionBuilder {
         return parentList;
     }
 
+    // TODO easy method for unconditional queries
+
     private void addConditionalUpgradeQuery(ConditionalUpgradeQuery query) {
         conditionalUpgradeQueries.add(query);
     }
