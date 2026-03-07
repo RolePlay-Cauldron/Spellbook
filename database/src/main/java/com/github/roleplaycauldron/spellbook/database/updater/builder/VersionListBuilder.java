@@ -15,6 +15,11 @@ public class VersionListBuilder {
     private final List<DatabaseVersion> versions = new LinkedList<>();
 
     /**
+     * Creates a new VersionListBuilder
+     */
+    public VersionListBuilder() {}
+
+    /**
      * Creates a new version by providing its version number. These have to be bigger than zero and unique
      *
      * @param versionNumber the version number, bigger than zero and unique
