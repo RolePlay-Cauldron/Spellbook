@@ -147,9 +147,7 @@ public class DatabaseUpdater {
             connection.setAutoCommit(false);
 
             for (var cQueries : dbVer.conditionalUpgradeQueries()) {
-                if (StringUtils.isNotBlank(cQueries.conditionQuery())
-                        && StringUtils.isNotBlank(cQueries.expectedResult())) {
-
+                if (!cQueries.isUnconditional()) {
                     try (PreparedStatement preparedStatement = connection.prepareStatement(cQueries.conditionQuery())) {
                         ResultSet resultSet = preparedStatement.executeQuery();
                         if (!resultSet.next() || !cQueries.expectedResult().equals(resultSet.getString(1))) {
