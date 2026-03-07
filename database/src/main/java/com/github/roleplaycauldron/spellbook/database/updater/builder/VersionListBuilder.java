@@ -1,8 +1,8 @@
-package com.github.roleplaycauldron.spellbook.database.updater2.builder;
+package com.github.roleplaycauldron.spellbook.database.updater.builder;
 
 import java.util.*;
 
-import com.github.roleplaycauldron.spellbook.database.updater2.*;
+import com.github.roleplaycauldron.spellbook.database.updater.DatabaseVersion;
 
 public class VersionListBuilder {
 

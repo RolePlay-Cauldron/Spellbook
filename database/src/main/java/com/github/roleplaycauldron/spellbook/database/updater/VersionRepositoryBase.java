@@ -1,6 +1,6 @@
-package com.github.roleplaycauldron.spellbook.database.updater2;
+package com.github.roleplaycauldron.spellbook.database.updater;
 
-import com.github.roleplaycauldron.spellbook.database.updater2.builder.VersionListBuilder;
+import com.github.roleplaycauldron.spellbook.database.updater.builder.VersionListBuilder;
 
 import java.util.Comparator;
 import java.util.List;

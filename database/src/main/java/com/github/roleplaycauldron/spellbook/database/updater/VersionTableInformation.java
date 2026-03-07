@@ -1,4 +1,4 @@
-package com.github.roleplaycauldron.spellbook.database.updater2;
+package com.github.roleplaycauldron.spellbook.database.updater;
 
 public record VersionTableInformation(
         String tableName,
