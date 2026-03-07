@@ -3,6 +3,7 @@ package com.github.roleplaycauldron.spellbook.database.updater2;
 import com.github.roleplaycauldron.spellbook.core.logger.WrappedLogger;
 import com.github.roleplaycauldron.spellbook.database.ConnectionProvider;
 import com.github.roleplaycauldron.spellbook.database.updater.DatabaseUpdateException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -146,17 +147,22 @@ public class DatabaseUpdater {
         try (Connection connection = connectionProvider.getConnection()) {
             connection.setAutoCommit(false);
 
-            // TODO unconditional Queries?
+            for (var cQueries : dbVer.conditionalUpgradeQueries()) {
+                if (StringUtils.isNotBlank(cQueries.conditionQuery())
+                        && StringUtils.isNotBlank(cQueries.expectedResult())) {
 
-            for (var conditionalQuerySet : dbVer.conditionalUpgradeQueries()) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(conditionalQuerySet.conditionQuery())) {
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    if (!resultSet.next() || !conditionalQuerySet.expectedResult().equals(resultSet.getString(1))) {
-                        continue;
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(cQueries.conditionQuery())) {
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        if (!resultSet.next() || !cQueries.expectedResult().equals(resultSet.getString(1))) {
+                            continue;
+                        }
+                    } catch (SQLException e) {
+                        connection.rollback();
+                        throw new DatabaseUpdateException("Error checking condition for version %d".formatted(dbVer.versionNumber()), e);
                     }
                 }
 
-                for (String statement : conditionalQuerySet.queries()) {
+                for (String statement : cQueries.queries()) {
                     try (PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
                         preparedStatement.executeUpdate();
                     } catch (SQLException e) {

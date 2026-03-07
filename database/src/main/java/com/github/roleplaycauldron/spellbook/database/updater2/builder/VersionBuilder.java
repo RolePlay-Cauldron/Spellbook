@@ -14,6 +14,8 @@ public class VersionBuilder {
 
     private final List<String> firstStartupQueries = new LinkedList<>();
 
+    private final List<String> unconditionalQueries = new LinkedList<>();
+
     public VersionBuilder(int versionNumber, VersionListBuilder parent) {
         this.versionNumber = versionNumber;
         this.parentList = parent;
@@ -28,12 +30,16 @@ public class VersionBuilder {
         return new ConditionalQueryBuilder(this, conditionQuery, expectedResult);
     }
 
+    public VersionBuilder addUnconditionalQuery(String query) {
+        unconditionalQueries.add(query);
+        return this;
+    }
+
     public VersionListBuilder next() {
+        conditionalUpgradeQueries.add(new ConditionalUpgradeQuery(null, null, unconditionalQueries));
         parentList.version(new DatabaseVersion(versionNumber, conditionalUpgradeQueries, firstStartupQueries));
         return parentList;
     }
-
-    // TODO easy method for unconditional queries
 
     private void addConditionalUpgradeQuery(ConditionalUpgradeQuery query) {
         conditionalUpgradeQueries.add(query);
