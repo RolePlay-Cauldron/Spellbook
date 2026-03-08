@@ -1,12 +1,14 @@
 # Spellbook
 
-Libraries for common code between our Minecraft Paper Plugins
+Libraries for common code between our Minecraft Plugins with Support for all major kinds of Minecraft Servers
 
 ---
 
-This project requires **Java 21+** as well as **Paper 1.21.1+**.
+This project requires **Java 21+** as well as **Paper**, **Velocity** or **BungeeCord**.
 
 ## Modules
+
+> All Modules are fully documented using Javadoc!
 
 __**Spellbook-Core:**__ Basic Utilities
 
@@ -28,7 +30,8 @@ We release this project to **GitHub Packages** but also provide a Mirror for thi
 ### Option 1: Adding the **GitHub Packages** Repository
 
 > [!IMPORTANT]
-> Note that GitHub Packages **always** requires you to authenticate against the Repository!
+> Note that GitHub **always** requires you to authenticate against the GitHub Packages Repository,
+> even though this is a public repository. This is a limitation by GitHub, not by us.
 
 1) Configure your Maven `~/.m2/settings.xml` with credentials. Create your Token (classic) [here](https://github.com/settings/tokens), you only require the `read:packages` scope
 ```xml
@@ -72,7 +75,7 @@ We release this project to **GitHub Packages** but also provide a Mirror for thi
 > This Mirror is hosted by one of our maintainers and is subject to change or downtime.
 > This mirror is maintained by a maintainer and is not guaranteed.
 > It may change or go offline without notice.
-> Prefer GitHub Packages, especially for reliable builds in CI/CD Environments!
+> Prefer GitHub Packages whenever possible, especially for reliable builds in CI/CD Environments!
 
 ### Add the Dependencies
 
