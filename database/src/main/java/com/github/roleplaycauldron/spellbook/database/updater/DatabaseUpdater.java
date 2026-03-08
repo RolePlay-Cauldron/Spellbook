@@ -100,7 +100,7 @@ public class DatabaseUpdater {
      * @throws DatabaseUpdateException if an error occurs during the update process or the migrations fail less gracefully
      */
     public boolean firstStartup() throws DatabaseUpdateException {
-        var firstStartupQueries = versionRepository.getVersionsForFirstStartup();
+        List<DatabaseVersion> firstStartupQueries = versionRepository.getVersionsForFirstStartup();
         if (firstStartupQueries.isEmpty()) {
             log.info("No version with FirstStartup Queries exists. Running default update process");
             return checkAndApplyUpdates();
@@ -110,7 +110,7 @@ public class DatabaseUpdater {
             return checkAndApplyUpdates();
         }
 
-        var firstStartup = firstStartupQueries.getFirst();
+        DatabaseVersion firstStartup = firstStartupQueries.getFirst();
         try (Connection connection = connectionProvider.getConnection()) {
             log.infoF("Performing first startup queries for database version %d", firstStartup.versionNumber());
             for (String statement : firstStartup.firstStartupQueries()) {
@@ -146,7 +146,7 @@ public class DatabaseUpdater {
         try (Connection connection = connectionProvider.getConnection()) {
             connection.setAutoCommit(false);
 
-            for (var cQueries : dbVer.conditionalUpgradeQueries()) {
+            for (ConditionalUpgradeQuery cQueries : dbVer.conditionalUpgradeQueries()) {
                 if (!cQueries.isUnconditional()) {
                     try (PreparedStatement preparedStatement = connection.prepareStatement(cQueries.conditionQuery())) {
                         ResultSet resultSet = preparedStatement.executeQuery();

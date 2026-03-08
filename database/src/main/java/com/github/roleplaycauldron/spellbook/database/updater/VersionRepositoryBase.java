@@ -5,6 +5,7 @@ import com.github.roleplaycauldron.spellbook.database.updater.builder.VersionLis
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.function.Predicate;
 
 /**
@@ -71,7 +72,7 @@ public abstract class VersionRepositoryBase {
      * @return a list of {@code DatabaseVersion} objects determined based on their startup query availability
      */
     public List<DatabaseVersion> getVersionsForFirstStartup() {
-        var highestWithStartup = versions.stream()
+        OptionalInt highestWithStartup = versions.stream()
                 .filter(Predicate.not(version -> version.firstStartupQueries().isEmpty()))
                 .mapToInt(DatabaseVersion::versionNumber)
                 .max();
