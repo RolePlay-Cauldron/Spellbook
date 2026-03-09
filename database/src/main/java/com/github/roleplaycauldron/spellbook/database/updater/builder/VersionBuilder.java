@@ -1,6 +1,8 @@
 package com.github.roleplaycauldron.spellbook.database.updater.builder;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.github.roleplaycauldron.spellbook.database.updater.ConditionalUpgradeQuery;
 import com.github.roleplaycauldron.spellbook.database.updater.DatabaseVersion;
@@ -31,9 +33,14 @@ public class VersionBuilder {
     private final List<String> firstStartupQueries = new LinkedList<>();
 
     /**
-     * List of queries that are run unconditionally
+     * Map of Priority to Queries that are run unconditionally
      */
-    private final List<String> unconditionalQueries = new LinkedList<>();
+    private final Map<Integer, String> unconditionalQueries = new LinkedHashMap<>();
+
+    /**
+     * Tracker for the highest priority already assigned to a query
+     */
+    private final AtomicInteger highestPriority = new AtomicInteger(0);
 
     /**
      * Creates a new VersionBuilder with the given version number and parent list builder
@@ -78,7 +85,7 @@ public class VersionBuilder {
      * @return this builder
      */
     public VersionBuilder addUnconditionalQuery(String query) {
-        unconditionalQueries.add(query);
+        unconditionalQueries.put(highestPriority.getAndIncrement(), query);
         return this;
     }
 
@@ -88,8 +95,18 @@ public class VersionBuilder {
      * @return the parent list builder
      */
     public VersionListBuilder finishVersion() {
-        conditionalUpgradeQueries.add(new ConditionalUpgradeQuery(null, null, unconditionalQueries));
-        parentList.version(new DatabaseVersion(versionNumber, conditionalUpgradeQueries, firstStartupQueries));
+        List<ConditionalUpgradeQuery> combinedQueries = unconditionalQueries.entrySet()
+                .stream()
+                .map(e -> new ConditionalUpgradeQuery(
+                        e.getKey(),
+                        null,
+                        null,
+                        List.of(e.getValue())
+                ))
+                .collect(Collectors.toList());
+
+        combinedQueries.addAll(conditionalUpgradeQueries);
+        parentList.version(new DatabaseVersion(versionNumber, combinedQueries, firstStartupQueries));
         return parentList;
     }
 
@@ -155,7 +172,7 @@ public class VersionBuilder {
          */
         public ConditionalQueryBuilder addConditionalQuery(String conditionQuery, String expectedResult) {
             parentVersion.addConditionalUpgradeQuery(new ConditionalUpgradeQuery(
-                    conditionQuery, expectedResult, queries
+                    parentVersion.highestPriority.getAndIncrement(), conditionQuery, expectedResult, queries
             ));
             return parentVersion.addConditionalQuery(conditionQuery, expectedResult);
         }
@@ -193,7 +210,7 @@ public class VersionBuilder {
 
         private void addSelfToParent() {
             parentVersion.addConditionalUpgradeQuery(new ConditionalUpgradeQuery(
-                    conditionQuery, expectedResult, queries
+                    parentVersion.highestPriority.getAndIncrement(), conditionQuery, expectedResult, queries
             ));
         }
     }

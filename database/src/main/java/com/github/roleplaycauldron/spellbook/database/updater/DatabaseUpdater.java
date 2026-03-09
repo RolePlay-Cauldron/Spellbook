@@ -2,12 +2,12 @@ package com.github.roleplaycauldron.spellbook.database.updater;
 
 import com.github.roleplaycauldron.spellbook.core.logger.WrappedLogger;
 import com.github.roleplaycauldron.spellbook.database.ConnectionProvider;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -146,7 +146,10 @@ public class DatabaseUpdater {
         try (Connection connection = connectionProvider.getConnection()) {
             connection.setAutoCommit(false);
 
-            for (ConditionalUpgradeQuery cQueries : dbVer.conditionalUpgradeQueries()) {
+            List<ConditionalUpgradeQuery> conditionalUpgradeQueries = dbVer.conditionalUpgradeQueries();
+            conditionalUpgradeQueries.sort(Comparator.comparingInt(ConditionalUpgradeQuery::priority));
+
+            for (ConditionalUpgradeQuery cQueries : conditionalUpgradeQueries) {
                 if (!cQueries.isUnconditional()) {
                     try (PreparedStatement preparedStatement = connection.prepareStatement(cQueries.conditionQuery())) {
                         ResultSet resultSet = preparedStatement.executeQuery();

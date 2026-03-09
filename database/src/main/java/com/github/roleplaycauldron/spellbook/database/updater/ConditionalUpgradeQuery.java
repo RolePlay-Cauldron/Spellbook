@@ -13,6 +13,7 @@ import java.util.List;
  * @param queries the queries to run if the condition query is fulfilled
  */
 public record ConditionalUpgradeQuery(
+        int priority,
         String conditionQuery,
         String expectedResult,
         List<String> queries
