@@ -8,7 +8,8 @@ import com.github.roleplaycauldron.spellbook.database.updater.ConditionalUpgrade
 import com.github.roleplaycauldron.spellbook.database.updater.DatabaseVersion;
 
 /**
- * Builder for a single Database Version
+ * <p>Builder for a single Database Version</p>
+ * <p>Queries will be prioritized in the same order they are added by this Builder.</p>
  */
 public class VersionBuilder {
 
@@ -68,7 +69,8 @@ public class VersionBuilder {
      * <p>Add a set of conditional queries. First the <code>conditionQuery</code> will be run
      * and the first result will be compared to <code>expectedResult</code>.</p>
      * <p>Only if the results match the queries provided next will be run</p>
-     * <p>If conditionQuery or expectedResult are null/empty, the queries count are handled as unconditional</p>
+     * <p>If conditionQuery or expectedResult are null/empty, the queries are handled as unconditional</p>
+     * <p>Queries will be prioritized in the same order they are added by this Builder.</p>
      *
      * @param conditionQuery the query to run to check if the upgrade should be applied
      * @param expectedResult the expected result of the condition query
@@ -79,7 +81,8 @@ public class VersionBuilder {
     }
 
     /**
-     * Adds an unconditional query to this version. This query will be run without a condition check.
+     * <p>Adds an unconditional query to this version. This query will be run without a condition check.</p>
+     * <p>Queries will be prioritized in the same order they are added by this Builder.</p>
      *
      * @param query the query to run
      * @return this builder
@@ -179,6 +182,7 @@ public class VersionBuilder {
 
         /**
          * Add an unconditional query to the currently worked on version
+         * See {@link VersionBuilder#addUnconditionalQuery(String)} for more information.
          *
          * @param query the query to add
          * @return the builder for the current version
