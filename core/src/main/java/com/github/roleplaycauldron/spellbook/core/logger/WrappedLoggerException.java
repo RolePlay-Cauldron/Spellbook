@@ -19,6 +19,7 @@ public class WrappedLoggerException extends RuntimeException {
     /**
      * Constructor wrapping the given Throwable with a {@link WrappedLoggerException}
      * @param message the message of this exception
+     * @param cause the cause of this exception
      */
     public WrappedLoggerException(String message, Throwable cause) {
         super(message, cause);

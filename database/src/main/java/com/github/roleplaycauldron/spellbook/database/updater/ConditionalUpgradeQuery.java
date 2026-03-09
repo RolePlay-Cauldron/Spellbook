@@ -8,6 +8,7 @@ import java.util.List;
  * A record containing conditional upgrade queries.
  * If conditionQuery or expectedResult are null/empty, it counts as unconditional.
  *
+ * @param priority the priority of the query
  * @param conditionQuery the condition query
  * @param expectedResult the expected result of the condition query
  * @param queries the queries to run if the condition query is fulfilled
