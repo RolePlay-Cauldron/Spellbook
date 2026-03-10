@@ -13,6 +13,7 @@ import java.util.Objects;
 
 /**
  * This class will perform Database Updates based on the Versions provided in a VersionRepository.
+ * You have to create the version-table yourself.
  */
 public class DatabaseUpdater {
 
@@ -39,7 +40,8 @@ public class DatabaseUpdater {
     /**
      * Only the Builder can create instances without providing all required fields
      */
-    private DatabaseUpdater() {}
+    private DatabaseUpdater() {
+    }
 
     /**
      * Subclasses need to provide all fields to the constructor.
@@ -118,6 +120,7 @@ public class DatabaseUpdater {
                     preparedStatement.executeUpdate();
                 }
             }
+            updateVersionIndex(connection, firstStartup.versionNumber());
         } catch (SQLException e) {
             throw new DatabaseUpdateException("Error performing first startup queries for version %d".formatted(firstStartup.versionNumber()), e);
         }
@@ -265,6 +268,7 @@ public class DatabaseUpdater {
 
         /**
          * Provide information about the version table. This information may not change!
+         * You have to create the version-table yourself!
          *
          * @param tableName                name of the version table
          * @param getMaxVersionQuery       SQL query to get the current version. It must be the first result of the query.
