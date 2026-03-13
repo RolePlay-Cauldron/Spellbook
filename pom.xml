@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <revision>0.0.8</revision>
+        <changelist>-alpha</changelist>
+        <java.api.version>21</java.api.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+    </properties>
+
     <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook</artifactId>
-    <version>0.0.8-alpha</version>
+    <version>${revision}${changelist}</version>
     <packaging>pom</packaging>
 
     <name>RolePlay Cauldron Spellbook</name>
@@ -35,12 +43,6 @@
         </repository>
     </distributionManagement>
 
-    <properties>
-        <maven.compiler.release>21</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.parameters>true</maven.compiler.parameters>
-    </properties>
-
     <repositories>
         <repository>
             <id>papermc</id>
@@ -63,7 +65,7 @@
             <dependency>
                 <groupId>com.github.roleplay-cauldron</groupId>
                 <artifactId>spellbook-core</artifactId>
-                <version>${project.version}</version>
+                <version>${revision}${changelist}</version>
             </dependency>
             <dependency>
                 <groupId>io.papermc.paper</groupId>
@@ -104,7 +106,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <release>${maven.compiler.release}</release>
+                    <release>${java.api.version}</release>
                     <parameters>${maven.compiler.parameters}</parameters>
                 </configuration>
             </plugin>
@@ -134,7 +136,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${maven.compiler.release}</source>
+                    <source>${java.api.version}</source>
                     <failOnError>false</failOnError>
                 </configuration>
             </plugin>
