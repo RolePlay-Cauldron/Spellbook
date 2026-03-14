@@ -54,13 +54,13 @@ public class StandardParticleEmitter<T> implements ParticleEmitter {
 
     @Override
     public void spawn(SpawnContext context) {
-        Collection<? extends Player> viewers = context.context().viewers();
+        Collection<? extends Player> viewers = context.effectContext().viewers();
         if (viewers.isEmpty()) {
             return;
         }
 
         Location location = new Location(
-                context.context().world(),
+                context.effectContext().world(),
                 context.worldPoint().x(),
                 context.worldPoint().y(),
                 context.worldPoint().z()
