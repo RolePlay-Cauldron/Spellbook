@@ -7,97 +7,95 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a 3D helix-shaped particle effect or construct.
- * This class defines a helix by its radius, height, number of points, number of turns,
- * and an angular speed factor for dynamic rotational behavior.
- * The helix is defined in a 3D space and provides a mechanism to sample points
- * along its geometry based on specific parameters.
+ * Represents a helical shape for particle or point generation, defined by configurable strands,
+ * radius, height, number of turns, and rotation speed. The helix is sampled by evenly
+ * distributing points across multiple strands that twist around a central axis.
  */
 public final class HelixShape implements Shape {
+
+    private final int strands;
+
+    private final int particlesPerStrand;
 
     private final float radius;
 
     private final float height;
 
-    private final int points;
-
     private final float turns;
 
-    private final float angularSpeed;
-
-    private final float travelSpeed;
+    private final float rotationSpeed;
 
     /**
-     * Constructs a new HelixShape instance representing a helix-shaped effect.
+     * Constructs a HelixShape object with the specified parameters to define the properties
+     * of a helical shape. The helix is comprised of multiple strands, with particles
+     * uniformly distributed along each strand, spiraling around a central axis.
      *
-     * @param radius       the radius of the helix; must be greater than 0
-     * @param height       the height of the helix; must be greater than or equal to 0, or -1 to use distance between origin and target
-     * @param points       the number of points to generate along the helix; must be greater than 0
-     * @param turns        the number of complete turns in the helix; must be greater than 0
-     * @param angularSpeed the rotational speed factor applied to the helix
-     * @throws IllegalArgumentException if any of the parameters do not satisfy their constraints
+     * @param strands            the number of strands in the helix; must be greater than 0
+     * @param particlesPerStrand the number of particles per strand; must be greater than 0
+     * @param radius             the radius of the helix defining the horizontal spread; must be greater than 0
+     * @param height             the total height of the helix; must be greater than or equal to 0
+     * @param turns              the total number of complete turns of the helix; must be greater than 0
+     * @param rotationSpeed      the rotation speed of the helix, influencing its dynamic behavior
+     *                           during sampling or animation
+     * @throws IllegalArgumentException if any parameter value fails its respective validation
      */
-    public HelixShape(float radius, float height, int points, float turns, float angularSpeed) {
-        this(radius, height, points, turns, angularSpeed, 0f);
-    }
+    public HelixShape(
+            int strands,
+            int particlesPerStrand,
+            float radius,
+            float height,
+            float turns,
+            float rotationSpeed
+    ) {
+        if (strands <= 0) {
+            throw new IllegalArgumentException("strands must be > 0");
+        }
+        if (particlesPerStrand <= 0) {
+            throw new IllegalArgumentException("particlesPerStrand must be > 0");
+        }
+        if (radius <= 0) {
+            throw new IllegalArgumentException("radius must be > 0");
+        }
+        if (height < 0) {
+            throw new IllegalArgumentException("height must be >= 0");
+        }
+        if (turns <= 0) {
+            throw new IllegalArgumentException("turns must be > 0");
+        }
 
-    /**
-     * Constructs a new HelixShape instance representing a helix-shaped effect with travel speed.
-     *
-     * @param radius       the radius of the helix; must be greater than 0
-     * @param height       the height of the helix; must be greater than or equal to 0, or -1 to use distance between origin and target
-     * @param points       the number of points to generate along the helix; must be greater than 0
-     * @param turns        the number of complete turns in the helix; must be greater than 0
-     * @param angularSpeed the rotational speed factor applied to the helix
-     * @param travelSpeed  the speed at which particles travel along the helix path (percentage per step)
-     * @throws IllegalArgumentException if any of the parameters do not satisfy their constraints
-     */
-    public HelixShape(float radius, float height, int points, float turns, float angularSpeed, float travelSpeed) {
-        if (radius <= 0) throw new IllegalArgumentException("radius must be > 0");
-        if (height < 0 && height != -1) throw new IllegalArgumentException("height must be >= 0 or -1");
-        if (points <= 0) throw new IllegalArgumentException("points must be > 0");
-        if (turns <= 0) throw new IllegalArgumentException("turns must be > 0");
-
+        this.strands = strands;
+        this.particlesPerStrand = particlesPerStrand;
         this.radius = radius;
         this.height = height;
-        this.points = points;
         this.turns = turns;
-        this.angularSpeed = angularSpeed;
-        this.travelSpeed = travelSpeed;
+        this.rotationSpeed = rotationSpeed;
     }
 
     @Override
     public List<Vector3f> sample(ShapeContext context) {
-        List<Vector3f> result = new ArrayList<>(points);
+        List<Vector3f> result = new ArrayList<>(strands * particlesPerStrand);
 
-        float baseAngle = context.step() * angularSpeed;
+        float baseRotation = context.step() * rotationSpeed;
 
-        float actualHeight = height;
-        if (height == -1) {
-            actualHeight = (context.origin() != null && context.target() != null)
-                    ? (float) context.origin().distance(context.target())
-                    : 1.0f;
-        }
+        for (int i = 0; i < strands; i++) {
+            float strandOffset = (float) (2.0 * Math.PI * i / strands);
 
-        float travelOffset = context.step() * travelSpeed;
+            for (int j = 0; j < particlesPerStrand; j++) {
+                float ratio = particlesPerStrand == 1
+                        ? 0f
+                        : (float) j / (particlesPerStrand - 1);
 
-        for (int i = 0; i < points; i++) {
-            float t;
-            if (travelSpeed != 0) {
-                t = ((float) i / points + travelOffset) % 1.0f;
-                if (t < 0) t += 1.0f;
-            } else {
-                t = points == 1 ? 0f : (float) i / (points - 1);
+                float angle = baseRotation
+                        + strandOffset
+                        + ratio * turns * (float) (2.0 * Math.PI);
+
+                float x = (float) Math.cos(angle) * radius;
+                float y = ratio * height;
+                float z = (float) Math.sin(angle) * radius;
+
+                result.add(new Vector3f(x, y, z));
             }
-
-            float angle = baseAngle + t * turns * (float) (Math.PI * 2.0);
-            float x = (float) Math.cos(angle) * radius;
-            float y = t * actualHeight;
-            float z = (float) Math.sin(angle) * radius;
-
-            result.add(new Vector3f(x, y, z));
         }
-
         return result;
     }
 }
