@@ -9,10 +9,13 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test class for verifying the behavior and validation logic of the HelixShape class.
+ * The tests ensure that the HelixShape constructor and sampling logic function correctly
+ * under various valid and invalid input conditions.
+ */
 class HelixShapeTest {
 
     @Test

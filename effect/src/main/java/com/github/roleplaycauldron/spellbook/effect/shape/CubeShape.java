@@ -6,12 +6,28 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@code CubeShape} represents a cubic-shaped structure that generates a series of 3D points
+ * along the edges of the cube. The cube is defined by its size and the number of points sampled
+ * per edge.
+ * <p>
+ * This shape distributes points evenly along the 12 edges of the cube, which is centered at the origin.
+ */
 public final class CubeShape implements Shape {
 
     private final float size;
 
     private final int pointsPerEdge;
 
+    /**
+     * Constructs a {@code CubeShape} object with a specified size and the number of points
+     * to be generated along each edge of the cube. The cube is centered at the origin.
+     *
+     * @param size          the length of each edge of the cube; must be greater than 0
+     * @param pointsPerEdge the number of points to be generated along each edge of the cube; must be at least 2
+     * @throws IllegalArgumentException if {@code size} is less than or equal to 0
+     * @throws IllegalArgumentException if {@code pointsPerEdge} is less than 2
+     */
     public CubeShape(float size, int pointsPerEdge) {
         if (size <= 0f) {
             throw new IllegalArgumentException("size must be > 0");

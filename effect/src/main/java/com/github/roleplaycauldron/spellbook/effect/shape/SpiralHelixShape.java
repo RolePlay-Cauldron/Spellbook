@@ -50,6 +50,9 @@ public final class SpiralHelixShape implements Shape {
             float curve,
             float rotationSpeed
     ) {
+
+        // ToDo Inverten von außen nach innen ermöglichen!
+
         if (strands <= 0) {
             throw new IllegalArgumentException("strands must be > 0");
         }
@@ -60,6 +63,7 @@ public final class SpiralHelixShape implements Shape {
             throw new IllegalArgumentException("radius must be > 0");
         }
 
+        // ToDo Testen was passiert, wenn ich height rausnehme und transform target drin lasse und rausnehme!
         this.strands = strands;
         this.particlesPerStrand = particlesPerStrand;
         this.radius = radius;
