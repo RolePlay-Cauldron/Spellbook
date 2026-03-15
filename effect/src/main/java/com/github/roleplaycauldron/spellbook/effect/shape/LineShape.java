@@ -7,58 +7,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a straight line-shaped particle effect or construct.
- * This class defines a line segment in 3D space, starting at (0,0,0) and extending along the Y-axis.
- * It provides a mechanism to sample points along the line based on the number of points specified.
+ * A {@code LineShape} represents a straight-line shape that generates a series of 3D points
+ * along a linear interpolation from an origin to a target. The number of points generated
+ * is specified during construction.
  */
 public final class LineShape implements Shape {
 
     private final int points;
 
-    private final float travelSpeed;
-
     /**
-     * Creates a new LineShape
+     * Constructs a {@code LineShape} object with a specified number of points,
+     * representing a linear shape for generating 3D points or particles.
      *
-     * @param points the number of points to sample along the line
+     * @param points the number of points to generate along the line; must be greater than 0
+     * @throws IllegalArgumentException if the {@code points} parameter is less than or equal to 0
      */
     public LineShape(int points) {
-        this(points, 0f);
-    }
-
-    /**
-     * Creates a new LineShape with travel speed
-     *
-     * @param points      the number of points to sample along the line
-     * @param travelSpeed the speed at which particles travel along the line (percentage per step)
-     */
-    public LineShape(int points, float travelSpeed) {
-        if (points <= 0) throw new IllegalArgumentException("points must be > 0");
-
+        if (points <= 0) {
+            throw new IllegalArgumentException("points must be > 0");
+        }
         this.points = points;
-        this.travelSpeed = travelSpeed;
     }
 
     @Override
     public List<Vector3f> sample(ShapeContext context) {
-        float length = 1.0f;
-        if (context.origin() != null && context.target() != null) {
-            length = (float) context.origin().distance(context.target());
+        if (context.origin() == null || context.target() == null) {
+            return new ArrayList<>();
         }
+
+        Vector3f origin = context.origin().toVector().toVector3f();
+        Vector3f target = context.target().toVector().toVector3f();
+        Vector3f direction = new Vector3f(target).sub(origin);
 
         List<Vector3f> result = new ArrayList<>(points);
 
-        float travelOffset = context.step() * travelSpeed;
+        if (points == 1) {
+            result.add(new Vector3f(0, 0, 0));
+            return result;
+        }
 
         for (int i = 0; i < points; i++) {
-            float t;
-            if (travelSpeed != 0) {
-                t = ((float) i / points + travelOffset) % 1.0f;
-                if (t < 0) t += 1.0f;
-            } else {
-                t = points == 1 ? 0f : (float) i / (points - 1);
-            }
-            result.add(new Vector3f(0, t * length, 0));
+            float t = (float) i / (points - 1);
+            result.add(new Vector3f(direction).mul(t));
         }
 
         return result;
