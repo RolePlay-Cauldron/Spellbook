@@ -15,7 +15,7 @@ import java.util.function.Function;
  * @param <K2> the second key type
  * @param <E> the entity type
  */
-public final class BiKeyLoadingCache<K1, K2, E> {
+public class BiKeyLoadingCache<K1, K2, E> {
 
     private final MultiKeyLoadingCache<E> delegate;
 

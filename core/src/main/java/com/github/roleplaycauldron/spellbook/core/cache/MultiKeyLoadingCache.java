@@ -18,7 +18,7 @@ import java.util.function.Function;
  *
  * @param <E> the entity type
  */
-public final class MultiKeyLoadingCache<E> {
+public class MultiKeyLoadingCache<E> {
 
     private final List<KeySpace<?, E>> keySpaces;
 
