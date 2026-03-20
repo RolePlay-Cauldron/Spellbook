@@ -119,6 +119,28 @@ public class MultiKeyLoadingCache<E> {
     }
 
     /**
+     * Insert or replace multiple entities in the cache.
+     * <p>
+     * Each entity follows the same rules as {@link #put(Object)}. The entities are processed in
+     * iteration order while the cache is held under one mutation lock.
+     *
+     * @param entities the entities to cache
+     */
+    public void putAll(final Iterable<? extends E> entities) {
+        Objects.requireNonNull(entities, "entities must not be null");
+
+        mutationLock.lock();
+        try {
+            for (final E entity : entities) {
+                Objects.requireNonNull(entity, "entities must not contain null");
+                putInternal(entity);
+            }
+        } finally {
+            mutationLock.unlock();
+        }
+    }
+
+    /**
      * Invalidate a cached entity by one of its keys.
      * <p>
      * If the key is present, every alias of the resolved entity is removed from the cache.
@@ -183,6 +205,22 @@ public class MultiKeyLoadingCache<E> {
      */
     public long size() {
         return entries.size();
+    }
+
+    /**
+     * Return a snapshot of all canonical entities currently cached.
+     *
+     * @return an unmodifiable collection containing all cached entities
+     */
+    public Collection<E> getAll() {
+        mutationLock.lock();
+        try {
+            return Set.copyOf(entries.keySet().stream()
+                    .map(CacheEntry::entity)
+                    .toList());
+        } finally {
+            mutationLock.unlock();
+        }
     }
 
     private <K> ConcurrentMap<Object, CacheEntry<E>> indexFor(final KeySpace<K, E> keySpace) {

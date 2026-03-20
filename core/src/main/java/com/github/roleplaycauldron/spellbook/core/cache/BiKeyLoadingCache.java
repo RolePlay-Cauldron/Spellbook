@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.core.cache;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -96,6 +97,15 @@ public class BiKeyLoadingCache<K1, K2, E> {
     }
 
     /**
+     * Insert or replace multiple entities and index them under both keys.
+     *
+     * @param entities the entities to cache
+     */
+    public void putAll(final Iterable<? extends E> entities) {
+        delegate.putAll(entities);
+    }
+
+    /**
      * Invalidate an entity by re-extracting both keys from it.
      *
      * @param entity the entity to remove
@@ -136,5 +146,14 @@ public class BiKeyLoadingCache<K1, K2, E> {
      */
     public long size() {
         return delegate.size();
+    }
+
+    /**
+     * Return a snapshot of all cached entities.
+     *
+     * @return an unmodifiable collection containing all cached entities
+     */
+    public Collection<E> getAll() {
+        return delegate.getAll();
     }
 }
