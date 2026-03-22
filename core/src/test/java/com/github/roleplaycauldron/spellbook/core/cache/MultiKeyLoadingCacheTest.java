@@ -2,8 +2,10 @@ package com.github.roleplaycauldron.spellbook.core.cache;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -129,6 +131,52 @@ class MultiKeyLoadingCacheTest {
 
         assertThrows(NullPointerException.class,
                 () -> cache.put(new TestEntity("1", null, "alpha@example.test")));
+    }
+
+    @Test
+    void putAllIndexesAllEntitiesAndResolvesConflictsLikePut() {
+        final MultiKeyLoadingCache.Builder<TestEntity> builder = MultiKeyLoadingCache.builder();
+        final MultiKeyLoadingCache.KeySpace<String, TestEntity> idKey =
+                builder.addKeySpace("id", TestEntity::id, key -> Optional.empty());
+        final MultiKeyLoadingCache.KeySpace<String, TestEntity> usernameKey =
+                builder.addKeySpace("username", TestEntity::username, key -> Optional.empty());
+        final MultiKeyLoadingCache.KeySpace<String, TestEntity> emailKey =
+                builder.addKeySpace("email", TestEntity::email, key -> Optional.empty());
+        final MultiKeyLoadingCache<TestEntity> cache = builder.build();
+
+        final TestEntity firstEntity = new TestEntity("1", "alpha", "alpha@example.test");
+        final TestEntity secondEntity = new TestEntity("2", "bravo", "bravo@example.test");
+        final TestEntity conflictingEntity = new TestEntity("3", "alpha", "charlie@example.test");
+
+        cache.putAll(List.of(firstEntity, secondEntity, conflictingEntity));
+
+        assertEquals(Optional.empty(), cache.getIfPresent(idKey, firstEntity.id()));
+        assertEquals(Optional.of(secondEntity), cache.getIfPresent(idKey, secondEntity.id()));
+        assertEquals(Optional.of(conflictingEntity), cache.getIfPresent(idKey, conflictingEntity.id()));
+        assertEquals(Optional.of(conflictingEntity), cache.getIfPresent(usernameKey, conflictingEntity.username()));
+        assertEquals(Optional.of(conflictingEntity), cache.getIfPresent(emailKey, conflictingEntity.email()));
+        assertEquals(Set.of(secondEntity, conflictingEntity), Set.copyOf(cache.getAll()));
+        assertEquals(2L, cache.size());
+    }
+
+    @Test
+    void getAllReturnsUnmodifiableSnapshotOfCachedEntities() {
+        final MultiKeyLoadingCache.Builder<TestEntity> builder = MultiKeyLoadingCache.builder();
+        builder.addKeySpace("id", TestEntity::id, key -> Optional.empty());
+        builder.addKeySpace("username", TestEntity::username, key -> Optional.empty());
+        final MultiKeyLoadingCache<TestEntity> cache = builder.build();
+
+        final TestEntity firstEntity = new TestEntity("1", "alpha", "alpha@example.test");
+        final TestEntity secondEntity = new TestEntity("2", "bravo", "bravo@example.test");
+
+        cache.putAll(List.of(firstEntity, secondEntity));
+        final Set<TestEntity> cachedEntities = Set.copyOf(cache.getAll());
+
+        cache.invalidate(secondEntity);
+
+        assertEquals(Set.of(firstEntity, secondEntity), cachedEntities);
+        assertEquals(Set.of(firstEntity), Set.copyOf(cache.getAll()));
+        assertThrows(UnsupportedOperationException.class, () -> cache.getAll().add(secondEntity));
     }
 
     @Test
