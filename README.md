@@ -14,12 +14,19 @@ __**Spellbook-Core:**__ Basic Utilities
 
 - Advanced Logger
 - Easy-to-use Scheduler
+- Multi-Key Loading Caches (one Entity associated by 2+ Keys)
 
 __**Spellbook-Database:**__ Database Utilities
 
 - Database Updater (Automatic Schema Migrations)
 
 Remember to bring your own Database Driver!
+
+__**Spellbook-Effect:**__ Display gorgeous Particle Effects (Paper only)
+
+- Create 2D and 3D Effects of different Shapes or Forms
+
+This module only supports Paper as it interacts with the World and Players
 
 ---
 
@@ -85,12 +92,17 @@ Only choose the dependencies that you want
   <dependency>
     <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook-core</artifactId>
-    <version>0.0.1</version>
+    <version>X.X.X</version>
   </dependency>
   <dependency>
     <groupId>com.github.roleplay-cauldron</groupId>
     <artifactId>spellbook-database</artifactId>
-    <version>0.0.1</version>
+    <version>X.X.X</version>
+  </dependency>
+  <dependency>
+    <groupId>com.github.roleplay-cauldron</groupId>
+    <artifactId>spellbook-effect</artifactId>
+    <version>X.X.X</version>
   </dependency>
 </dependencies>
 ```
