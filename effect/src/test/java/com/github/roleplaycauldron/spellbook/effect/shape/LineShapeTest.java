@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -24,7 +25,7 @@ class LineShapeTest {
     @Test
     void testSamplesLineEndpointsAndMiddle() {
         LineShape shape = new LineShape(3);
-        List<Vector3f> points = shape.sample(createContext(0, 0, 0, 0, 0, 10, 0));
+        List<Vector3f> points = sample(shape, createContext(0, 0, 0, 0, 0, 10, 0));
 
         assertEquals(3, points.size());
         assertEquals(0f, points.getFirst().x, 1e-6f);
@@ -43,7 +44,7 @@ class LineShapeTest {
     @Test
     void testSinglePointReturnsStart() {
         LineShape shape = new LineShape(1);
-        List<Vector3f> points = shape.sample(createContext(0, 3, 4, 5, 0, 0, 0));
+        List<Vector3f> points = sample(shape, createContext(0, 3, 4, 5, 0, 0, 0));
 
         assertEquals(1, points.size());
         assertEquals(0f, points.getFirst().x, 1e-6f);
@@ -56,5 +57,11 @@ class LineShapeTest {
         Location origin = new Location(world, x1, y1, z1);
         Location target = new Location(world, x2, y2, z2);
         return new ShapeContext(step, 0.0, origin, target);
+    }
+
+    private List<Vector3f> sample(Shape shape, ShapeContext context) {
+        PointBuffer buffer = new PointBuffer();
+        shape.sample(context, buffer);
+        return buffer.toVectorList();
     }
 }

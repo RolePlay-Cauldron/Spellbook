@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,8 +36,8 @@ class MovingPointShapeTest {
     void testReturnsEmptyWhenOriginOrTargetIsMissing() {
         MovingPointShape shape = new MovingPointShape(0.5f, 0.5f, 3, false);
 
-        List<Vector3f> noOrigin = shape.sample(new ShapeContext(0, 0.0, null, createLocation(0, 1, 0)));
-        List<Vector3f> noTarget = shape.sample(new ShapeContext(0, 0.0, createLocation(0, 0, 0), null));
+        List<Vector3f> noOrigin = sample(shape, new ShapeContext(0, 0.0, null, createLocation(0, 1, 0)));
+        List<Vector3f> noTarget = sample(shape, new ShapeContext(0, 0.0, createLocation(0, 0, 0), null));
 
         assertEquals(0, noOrigin.size());
         assertEquals(0, noTarget.size());
@@ -45,7 +46,7 @@ class MovingPointShapeTest {
     @Test
     void testReturnsEmptyWhenOriginAndTargetAreEqual() {
         MovingPointShape shape = new MovingPointShape(0.5f, 0.5f, 3, false);
-        List<Vector3f> points = shape.sample(createContext(2, 1, 1, 1, 1, 1, 1));
+        List<Vector3f> points = sample(shape, createContext(2, 1, 1, 1, 1, 1, 1));
 
         assertEquals(0, points.size());
     }
@@ -53,7 +54,7 @@ class MovingPointShapeTest {
     @Test
     void testMovesWithWrappedDistanceInLoopMode() {
         MovingPointShape shape = new MovingPointShape(1f, 2f, 1, false);
-        List<Vector3f> points = shape.sample(createContext(6, 0, 0, 0, 0, 10, 0));
+        List<Vector3f> points = sample(shape, createContext(6, 0, 0, 0, 0, 10, 0));
 
         assertEquals(1, points.size());
         assertEquals(0f, points.getFirst().x, 1e-6f);
@@ -64,7 +65,7 @@ class MovingPointShapeTest {
     @Test
     void testMovesBackAndForthInPingPongMode() {
         MovingPointShape shape = new MovingPointShape(1f, 2f, 1, true);
-        Vector3f point = shape.sample(createContext(6, 0, 0, 0, 0, 10, 0)).getFirst();
+        Vector3f point = sample(shape, createContext(6, 0, 0, 0, 0, 10, 0)).getFirst();
 
         assertEquals(8f, point.y, 1e-6f);
     }
@@ -72,7 +73,7 @@ class MovingPointShapeTest {
     @Test
     void testReturnsTrailPointsUpToAmountPoints() {
         MovingPointShape shape = new MovingPointShape(1f, 2f, 3, false);
-        List<Vector3f> points = shape.sample(createContext(5, 0, 0, 0, 0, 10, 0));
+        List<Vector3f> points = sample(shape, createContext(5, 0, 0, 0, 0, 10, 0));
 
         assertEquals(3, points.size());
         assertEquals(0f, points.get(0).y, 1e-6f);
@@ -83,7 +84,7 @@ class MovingPointShapeTest {
     @Test
     void testSkipsTrailPointsBeforeEnoughDistanceIsTraveled() {
         MovingPointShape shape = new MovingPointShape(1f, 2f, 3, false);
-        List<Vector3f> points = shape.sample(createContext(1, 0, 0, 0, 0, 10, 0));
+        List<Vector3f> points = sample(shape, createContext(1, 0, 0, 0, 0, 10, 0));
 
         assertEquals(2, points.size());
         assertEquals(2f, points.get(0).y, 1e-6f);
@@ -97,5 +98,11 @@ class MovingPointShapeTest {
     private Location createLocation(double x, double y, double z) {
         World world = Mockito.mock(World.class);
         return new Location(world, x, y, z);
+    }
+
+    private List<Vector3f> sample(Shape shape, ShapeContext context) {
+        PointBuffer buffer = new PointBuffer();
+        shape.sample(context, buffer);
+        return buffer.toVectorList();
     }
 }

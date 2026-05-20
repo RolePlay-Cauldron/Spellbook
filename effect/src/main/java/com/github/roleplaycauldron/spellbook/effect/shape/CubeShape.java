@@ -1,10 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
-import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A {@code CubeShape} represents a cubic-shaped structure that generates a series of 3D points
@@ -15,9 +12,7 @@ import java.util.List;
  */
 public final class CubeShape implements Shape {
 
-    private final float size;
-
-    private final int pointsPerEdge;
+    private final float[] cachedPoints;
 
     /**
      * Constructs a {@code CubeShape} object with a specified size and the number of points
@@ -36,25 +31,32 @@ public final class CubeShape implements Shape {
             throw new IllegalArgumentException("pointsPerEdge must be >= 2");
         }
 
-        this.size = size;
-        this.pointsPerEdge = pointsPerEdge;
+        this.cachedPoints = buildPoints(size, pointsPerEdge);
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
+    public void sample(ShapeContext context, PointBuffer points) {
+        points.ensureCapacity(points.size() + cachedPoints.length / 3);
+        for (int i = 0; i < cachedPoints.length; i += 3) {
+            points.add(cachedPoints[i], cachedPoints[i + 1], cachedPoints[i + 2]);
+        }
+    }
+
+    private float[] buildPoints(float size, int pointsPerEdge) {
         float h = size / 2f;
-        List<Vector3f> result = new ArrayList<>(12 * pointsPerEdge);
+        float[] result = new float[12 * pointsPerEdge * 3];
+        int index = 0;
 
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-h, -h, -h),
-                new Vector3f(h, -h, -h),
-                new Vector3f(h, -h, h),
-                new Vector3f(-h, -h, h),
+        float[][] corners = new float[][]{
+                {-h, -h, -h},
+                {h, -h, -h},
+                {h, -h, h},
+                {-h, -h, h},
 
-                new Vector3f(-h, h, -h),
-                new Vector3f(h, h, -h),
-                new Vector3f(h, h, h),
-                new Vector3f(-h, h, h)
+                {-h, h, -h},
+                {h, h, -h},
+                {h, h, h},
+                {-h, h, h}
         };
 
         int[][] edges = new int[][]{
@@ -64,17 +66,16 @@ public final class CubeShape implements Shape {
         };
 
         for (int[] edge : edges) {
-            Vector3f start = corners[edge[0]];
-            Vector3f end = corners[edge[1]];
+            float[] start = corners[edge[0]];
+            float[] end = corners[edge[1]];
 
             for (int i = 0; i < pointsPerEdge; i++) {
                 float t = (float) i / (pointsPerEdge - 1);
 
-                float x = start.x + (end.x - start.x) * t;
-                float y = start.y + (end.y - start.y) * t;
-                float z = start.z + (end.z - start.z) * t;
+                result[index++] = start[0] + (end[0] - start[0]) * t;
+                result[index++] = start[1] + (end[1] - start[1]) * t;
+                result[index++] = start[2] + (end[2] - start[2]) * t;
 
-                result.add(new Vector3f(x, y, z));
             }
         }
         return result;

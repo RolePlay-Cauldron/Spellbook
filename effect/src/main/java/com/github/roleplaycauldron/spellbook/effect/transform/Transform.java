@@ -1,21 +1,39 @@
 package com.github.roleplaycauldron.spellbook.effect.transform;
 
 import com.github.roleplaycauldron.spellbook.effect.EffectContext;
-import org.joml.Vector3f;
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 
 /**
- * Represents a transformation that changes the direction of a point based on a target location.
+ * Represents a transformation that mutates buffered effect points.
  */
 @FunctionalInterface
 public interface Transform {
 
     /**
-     * Applies a transformation to a given point within the context of an effect.
+     * Prepares a frame-specific transform operation.
      *
-     * @param point   the 3D vector representing the point to be transformed
      * @param context the effect context containing relevant information, such as
      *                the origin, target location, current tick, and associated viewers
-     * @return a new vector representing the transformed point
+     * @return prepared transform operation for this frame
      */
-    Vector3f apply(Vector3f point, EffectContext context);
+    default PreparedTransform prepare(EffectContext context) {
+        return (points, index) -> apply(points, index, context);
+    }
+
+    /**
+     * Applies this transform to a point in the provided buffer.
+     *
+     * @param points  frame-local point buffer
+     * @param index   point index to mutate
+     * @param context effect context
+     */
+    void apply(PointBuffer points, int index, EffectContext context);
+
+    /**
+     * Prepared transform operation for one render frame.
+     */
+    @FunctionalInterface
+    interface PreparedTransform {
+        void apply(PointBuffer points, int index);
+    }
 }

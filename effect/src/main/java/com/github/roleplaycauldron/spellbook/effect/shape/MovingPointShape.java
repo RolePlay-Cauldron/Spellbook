@@ -1,10 +1,8 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a shape that generates a series of points moving along a straight
@@ -25,9 +23,9 @@ public final class MovingPointShape implements Shape {
     /**
      * Constructs a MovingPointShape with the specified parameters.
      *
-     * @param speed        the speed at which the points move along the shape, must be greater than 0
-     * @param spacing      the spacing between each point along the shape, must be greater than 0
-     * @param amountPoints the number of points to generate along the shape, must be greater than 0
+     * @param speed        the speed at which the points move along the shape must be greater than 0
+     * @param spacing      the spacing between each point along the shape must be greater than 0
+     * @param amountPoints the number of points to generate along the shape must be greater than 0
      * @param pingPong     whether the points should bounce back and forth along the line in a "ping-pong" motion
      * @throws IllegalArgumentException if speed, spacing, or amountPoints is less than or equal to 0
      */
@@ -49,9 +47,9 @@ public final class MovingPointShape implements Shape {
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
+    public void sample(ShapeContext context, PointBuffer points) {
         if (context.origin() == null || context.target() == null) {
-            return new ArrayList<>();
+            return;
         }
 
         Vector3f origin = context.origin().toVector().toVector3f();
@@ -61,7 +59,7 @@ public final class MovingPointShape implements Shape {
         float length = direction.length();
 
         if (length <= 0f) {
-            return new ArrayList<>();
+            return;
         }
 
         Vector3f normalizedDirection = new Vector3f(direction).normalize();
@@ -69,7 +67,7 @@ public final class MovingPointShape implements Shape {
         float distancePerStep = spacing * speed;
         float traveledDistance = context.step() * distancePerStep;
 
-        List<Vector3f> result = new ArrayList<>(amountPoints);
+        points.ensureCapacity(points.size() + amountPoints);
 
         for (int i = 0; i < amountPoints; i++) {
             float shiftedDistance = traveledDistance - (i * spacing);
@@ -85,10 +83,12 @@ public final class MovingPointShape implements Shape {
                 distanceAlongLine = shiftedDistance % length;
             }
 
-            result.add(new Vector3f(normalizedDirection).mul(distanceAlongLine));
+            points.add(
+                    normalizedDirection.x * distanceAlongLine,
+                    normalizedDirection.y * distanceAlongLine,
+                    normalizedDirection.z * distanceAlongLine
+            );
         }
-
-        return result;
     }
 
     private float pingPongDistance(float distance, float length) {

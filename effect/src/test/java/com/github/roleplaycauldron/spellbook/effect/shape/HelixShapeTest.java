@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -46,7 +47,7 @@ class HelixShapeTest {
     @Test
     void testSamplesExpectedPointCountAndRadius() {
         HelixShape shape = new HelixShape(2, 16, 2f, 4f, 2f, 0f);
-        List<Vector3f> points = shape.sample(createContext(0, 0, 0, 0, 0, 8, 0));
+        List<Vector3f> points = sample(shape, createContext(0, 0, 0, 0, 0, 8, 0));
 
         assertEquals(32, points.size());
         for (Vector3f point : points) {
@@ -60,8 +61,8 @@ class HelixShapeTest {
     void testRotationSpeedDependsOnStep() {
         HelixShape shape = new HelixShape(1, 8, 1f, 2f, 1f, 0.5f);
 
-        Vector3f pointStep0 = shape.sample(createContext(0, 0, 0, 0, 0, 0, 1)).get(0);
-        Vector3f pointStep1 = shape.sample(createContext(1, 0, 0, 0, 0, 0, 1)).get(0);
+        Vector3f pointStep0 = sample(shape, createContext(0, 0, 0, 0, 0, 0, 1)).get(0);
+        Vector3f pointStep1 = sample(shape, createContext(1, 0, 0, 0, 0, 0, 1)).get(0);
 
         assertNotEquals(pointStep0.x, pointStep1.x, 1e-6f);
     }
@@ -69,7 +70,7 @@ class HelixShapeTest {
     @Test
     void testStrandsStartWithExpectedOffset() {
         HelixShape shape = new HelixShape(2, 4, 1f, 2f, 1f, 0f);
-        List<Vector3f> points = shape.sample(createContext(0, 0, 0, 0, 0, 0, 1));
+        List<Vector3f> points = sample(shape, createContext(0, 0, 0, 0, 0, 0, 1));
 
         Vector3f firstStrandStart = points.get(0);
         Vector3f secondStrandStart = points.get(4);
@@ -85,5 +86,11 @@ class HelixShapeTest {
         Location origin = new Location(world, x1, y1, z1);
         Location target = new Location(world, x2, y2, z2);
         return new ShapeContext(step, 0.0, origin, target);
+    }
+
+    private List<Vector3f> sample(Shape shape, ShapeContext context) {
+        PointBuffer buffer = new PointBuffer();
+        shape.sample(context, buffer);
+        return buffer.toVectorList();
     }
 }

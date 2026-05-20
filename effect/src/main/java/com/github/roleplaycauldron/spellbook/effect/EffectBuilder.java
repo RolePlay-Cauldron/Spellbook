@@ -27,7 +27,7 @@ public class EffectBuilder {
 
     private ParticleEmitter particleEmitter;
 
-    private DirectionProvider directionProvider = (point, context) -> new Vector3f(0, 0, 0);
+    private DirectionProvider directionProvider = (localX, localY, localZ, context, destination) -> destination.set(0, 0, 0);
 
     private EffectBuilder() {
     }

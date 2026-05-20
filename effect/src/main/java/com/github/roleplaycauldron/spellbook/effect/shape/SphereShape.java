@@ -1,10 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
-import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a sphere-shaped particle effect.
@@ -19,6 +16,8 @@ public final class SphereShape implements Shape {
     private final int points;
 
     private final float angularSpeed;
+
+    private final float[] staticPoints;
 
     /**
      * Creates a static sphere shape.
@@ -44,12 +43,23 @@ public final class SphereShape implements Shape {
         this.radius = radius;
         this.points = points;
         this.angularSpeed = angularSpeed;
+        this.staticPoints = angularSpeed == 0f ? buildPoints(0f) : null;
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
-        List<Vector3f> result = new ArrayList<>(points);
+    public void sample(ShapeContext context, PointBuffer points) {
         float baseAngle = context.step() * angularSpeed;
+        float[] sampled = staticPoints == null ? buildPoints(baseAngle) : staticPoints;
+
+        points.ensureCapacity(points.size() + this.points);
+        for (int i = 0; i < sampled.length; i += 3) {
+            points.add(sampled[i], sampled[i + 1], sampled[i + 2]);
+        }
+    }
+
+    private float[] buildPoints(float baseAngle) {
+        float[] result = new float[points * 3];
+        int index = 0;
 
         for (int i = 0; i < points; i++) {
             float t = points == 1 ? 0.5f : (float) i / (points - 1);
@@ -60,7 +70,9 @@ public final class SphereShape implements Shape {
             float x = (float) Math.cos(angle) * radial;
             float z = (float) Math.sin(angle) * radial;
 
-            result.add(new Vector3f(x * radius, y * radius, z * radius));
+            result[index++] = x * radius;
+            result[index++] = y * radius;
+            result[index++] = z * radius;
         }
 
         return result;

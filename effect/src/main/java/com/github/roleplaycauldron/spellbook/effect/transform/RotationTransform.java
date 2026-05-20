@@ -1,6 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.transform;
 
 import com.github.roleplaycauldron.spellbook.effect.EffectContext;
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -44,9 +45,17 @@ public class RotationTransform implements Transform {
     }
 
     @Override
-    public Vector3f apply(Vector3f point, EffectContext context) {
-        Vector3f result = new Vector3f(point);
-        rotation.transform(result);
-        return result;
+    public PreparedTransform prepare(EffectContext context) {
+        Vector3f point = new Vector3f();
+        return (points, index) -> {
+            points.get(index, point);
+            rotation.transform(point);
+            points.set(index, point.x, point.y, point.z);
+        };
+    }
+
+    @Override
+    public void apply(PointBuffer points, int index, EffectContext context) {
+        prepare(context).apply(points, index);
     }
 }
