@@ -82,6 +82,7 @@ public class EffectInstance {
             modifier.apply(points, context);
         }
 
+        boolean requiresDirection = particleEmitter.requiresDirection();
         Vector3f direction = state.direction();
         double originX = context.origin().getX();
         double originY = context.origin().getY();
@@ -91,7 +92,11 @@ public class EffectInstance {
             float localX = points.x(i);
             float localY = points.y(i);
             float localZ = points.z(i);
-            directionProvider.getDirection(localX, localY, localZ, context, direction);
+            if (requiresDirection) {
+                directionProvider.getDirection(localX, localY, localZ, context, direction);
+            } else {
+                direction.set(0, 0, 0);
+            }
 
             particleEmitter.spawn(
                     context,

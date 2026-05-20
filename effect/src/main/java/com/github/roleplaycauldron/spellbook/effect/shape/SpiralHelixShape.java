@@ -26,6 +26,8 @@ public final class SpiralHelixShape implements Shape {
 
     private final boolean reverse;
 
+    private final float[] staticPoints;
+
     /**
      * Constructs a new SpiralHelixShape that represents a 3D spiral helix structure.
      * This structure consists of multiple strands of particles arranged in a helical pattern.
@@ -68,6 +70,7 @@ public final class SpiralHelixShape implements Shape {
         this.curve = curve;
         this.rotationSpeed = rotationSpeed;
         this.reverse = reverse;
+        this.staticPoints = rotationSpeed == 0f ? buildPoints(0f) : null;
     }
 
     /**
@@ -99,7 +102,20 @@ public final class SpiralHelixShape implements Shape {
     @Override
     public void sample(ShapeContext context, PointBuffer points) {
         points.ensureCapacity(points.size() + strands * particlesPerStrand);
+        if (staticPoints != null) {
+            for (int i = 0; i < staticPoints.length; i += 3) {
+                points.add(staticPoints[i], staticPoints[i + 1], staticPoints[i + 2]);
+            }
+            return;
+        }
+
         float rotation = context.step() * rotationSpeed;
+        appendPoints(points, rotation);
+    }
+
+    private float[] buildPoints(float rotation) {
+        float[] result = new float[strands * particlesPerStrand * 3];
+        int index = 0;
         float curveDirection = reverse ? -1.0f : 1.0f;
 
         for (int i = 0; i < strands; i++) {
@@ -113,11 +129,34 @@ public final class SpiralHelixShape implements Shape {
 
                 float currentRadius = ratio * radius;
 
-                float x = (float) (Math.cos(angle) * currentRadius);
-                float z = (float) (Math.sin(angle) * currentRadius);
-                float y = ratio * height;
+                result[index++] = (float) (Math.cos(angle) * currentRadius);
+                result[index++] = ratio * height;
+                result[index++] = (float) (Math.sin(angle) * currentRadius);
+            }
+        }
 
-                points.add(x, y, z);
+        return result;
+    }
+
+    private void appendPoints(PointBuffer points, float rotation) {
+        float curveDirection = reverse ? -1.0f : 1.0f;
+
+        for (int i = 0; i < strands; i++) {
+            for (int j = 1; j <= particlesPerStrand; j++) {
+                float ratio = (float) j / particlesPerStrand;
+
+                double angle =
+                        curveDirection * curve * ratio * 2.0 * Math.PI / strands
+                                + (2.0 * Math.PI * i / strands)
+                                + rotation;
+
+                float currentRadius = ratio * radius;
+
+                points.add(
+                        (float) (Math.cos(angle) * currentRadius),
+                        ratio * height,
+                        (float) (Math.sin(angle) * currentRadius)
+                );
             }
         }
     }

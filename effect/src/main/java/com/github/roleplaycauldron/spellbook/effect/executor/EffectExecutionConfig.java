@@ -33,6 +33,8 @@ public final class EffectExecutionConfig {
 
     private final ViewerSource viewerSource;
 
+    private final boolean skipEmptyViewerFrames;
+
     private final Function<ExecutionFrame, Integer> stepFunction;
 
     private EffectExecutionConfig(Builder builder) {
@@ -45,6 +47,7 @@ public final class EffectExecutionConfig {
         this.originAnchor = builder.originAnchor;
         this.targetAnchor = builder.targetAnchor;
         this.viewerSource = builder.viewerSource;
+        this.skipEmptyViewerFrames = builder.skipEmptyViewerFrames;
         this.stepFunction = builder.stepFunction;
     }
 
@@ -154,6 +157,15 @@ public final class EffectExecutionConfig {
     }
 
     /**
+     * Returns whether frames should skip rendering when the resolved viewer collection is empty.
+     *
+     * @return {@code true} when empty-viewer frames should not sample, transform, modify, or emit
+     */
+    public boolean skipEmptyViewerFrames() {
+        return skipEmptyViewerFrames;
+    }
+
+    /**
      * Retrieves the step function associated with the execution configuration.
      * The step function is a {@link Function} that takes an {@link ExecutionFrame}
      * as input and returns an integer representing the outcome or progress
@@ -193,6 +205,8 @@ public final class EffectExecutionConfig {
         private EffectAnchor targetAnchor;
 
         private ViewerSource viewerSource;
+
+        private boolean skipEmptyViewerFrames = true;
 
         private Function<ExecutionFrame, Integer> stepFunction = DEFAULT_STEP_FUNCTION;
 
@@ -319,6 +333,18 @@ public final class EffectExecutionConfig {
          */
         public Builder viewerSource(ViewerSource viewerSource) {
             this.viewerSource = viewerSource;
+            return this;
+        }
+
+        /**
+         * Sets whether frames should skip rendering when no viewers are resolved.
+         * Enabled by default.
+         *
+         * @param skipEmptyViewerFrames {@code true} to skip empty-viewer render work
+         * @return the current {@code Builder} instance for method chaining
+         */
+        public Builder skipEmptyViewerFrames(boolean skipEmptyViewerFrames) {
+            this.skipEmptyViewerFrames = skipEmptyViewerFrames;
             return this;
         }
 

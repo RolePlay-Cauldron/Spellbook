@@ -93,6 +93,9 @@ public final class EffectExecutor {
         }
 
         Collection<? extends Player> viewers = config.viewerSource().resolveViewers();
+        if (config.skipEmptyViewerFrames() && viewers.isEmpty()) {
+            return new FrameResult(true, false);
+        }
 
         long elapsedTicks = runIndex * config.periodTicks();
         double elapsedSeconds = elapsedTicks / 20.0;

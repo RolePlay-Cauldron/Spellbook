@@ -13,6 +13,17 @@ import com.github.roleplaycauldron.spellbook.effect.EffectContext;
 public interface ParticleEmitter {
 
     /**
+     * Returns whether this emitter consumes per-point direction values.
+     * Emitters that do not need direction data can use the default to let the render
+     * pipeline avoid unnecessary direction calculations.
+     *
+     * @return {@code true} when direction values are required by {@link #spawn}
+     */
+    default boolean requiresDirection() {
+        return true;
+    }
+
+    /**
      * Spawns particles based on the provided point data.
      * The implementation determines the specific behavior of the particle spawning,
      * such as the type, quantity, and configuration of particles.

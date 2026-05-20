@@ -22,6 +22,8 @@ public final class HelixShape implements Shape {
 
     private final float rotationSpeed;
 
+    private final float[] staticPoints;
+
     /**
      * Constructs a HelixShape object with the specified parameters to define the properties
      * of a helical shape. The helix consists of multiple strands, with particles
@@ -66,13 +68,49 @@ public final class HelixShape implements Shape {
         this.height = height;
         this.turns = turns;
         this.rotationSpeed = rotationSpeed;
+        this.staticPoints = rotationSpeed == 0f ? buildPoints(0f) : null;
     }
 
     @Override
     public void sample(ShapeContext context, PointBuffer points) {
         points.ensureCapacity(points.size() + strands * particlesPerStrand);
-        float baseRotation = context.step() * rotationSpeed;
+        if (staticPoints != null) {
+            for (int i = 0; i < staticPoints.length; i += 3) {
+                points.add(staticPoints[i], staticPoints[i + 1], staticPoints[i + 2]);
+            }
+            return;
+        }
 
+        float baseRotation = context.step() * rotationSpeed;
+        appendPoints(points, baseRotation);
+    }
+
+    private float[] buildPoints(float baseRotation) {
+        float[] result = new float[strands * particlesPerStrand * 3];
+        int index = 0;
+
+        for (int i = 0; i < strands; i++) {
+            float strandOffset = (float) (2.0 * Math.PI * i / strands);
+
+            for (int j = 0; j < particlesPerStrand; j++) {
+                float ratio = particlesPerStrand == 1
+                        ? 0f
+                        : (float) j / (particlesPerStrand - 1);
+
+                float angle = baseRotation
+                        + strandOffset
+                        + ratio * turns * (float) (2.0 * Math.PI);
+
+                result[index++] = (float) Math.cos(angle) * radius;
+                result[index++] = ratio * height;
+                result[index++] = (float) Math.sin(angle) * radius;
+            }
+        }
+
+        return result;
+    }
+
+    private void appendPoints(PointBuffer points, float baseRotation) {
         for (int i = 0; i < strands; i++) {
             float strandOffset = (float) (2.0 * Math.PI * i / strands);
 

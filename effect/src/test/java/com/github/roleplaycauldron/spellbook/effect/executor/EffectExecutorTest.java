@@ -70,6 +70,7 @@ class EffectExecutorTest {
         EffectExecutionConfig config = baseConfig(() -> origin)
                 .periodTicks(5)
                 .targetAnchor(() -> target)
+                .skipEmptyViewerFrames(false)
                 .stepFunction(customStep)
                 .build();
 
@@ -150,11 +151,32 @@ class EffectExecutorTest {
     }
 
     @Test
-    void testEmptyViewerCollectionDoesNotSkipRender() {
+    void testEmptyViewerCollectionSkipsRenderByDefault() {
         World world = Mockito.mock(World.class);
         CapturingEmitter emitter = new CapturingEmitter();
         EffectExecutionConfig config = baseConfig(() -> new Location(world, 0, 0, 0))
                 .viewerSource(List::of)
+                .build();
+
+        EffectExecutor.FrameResult result = EffectExecutor.renderFrame(
+                pointEffect(emitter),
+                config,
+                0,
+                new EffectRenderState()
+        );
+
+        assertTrue(result.advance());
+        assertFalse(result.cancel());
+        assertNull(emitter.context);
+    }
+
+    @Test
+    void testEmptyViewerCollectionCanRenderWhenSkipDisabled() {
+        World world = Mockito.mock(World.class);
+        CapturingEmitter emitter = new CapturingEmitter();
+        EffectExecutionConfig config = baseConfig(() -> new Location(world, 0, 0, 0))
+                .viewerSource(List::of)
+                .skipEmptyViewerFrames(false)
                 .build();
 
         EffectExecutor.FrameResult result = EffectExecutor.renderFrame(

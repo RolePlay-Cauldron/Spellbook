@@ -143,12 +143,52 @@ class EffectInstanceTest {
         effect.render(context);
     }
 
+    @Test
+    void testDirectionProviderRunsOnlyWhenEmitterRequiresDirection() {
+        Shape shape = (context, points) -> points.add(1, 0, 0);
+        int[] directionCalls = new int[]{0};
+        RecordingEmitter emitter = new RecordingEmitter(false);
+
+        EffectInstance effect = new EffectInstance(
+                shape,
+                List.of(),
+                List.of(),
+                emitter,
+                (localX, localY, localZ, context, destination) -> {
+                    directionCalls[0]++;
+                    destination.set(9, 0, 0);
+                }
+        );
+
+        World world = Mockito.mock(World.class);
+        EffectContext context = new EffectContext(world, new Location(world, 0, 0, 0), null, List.of(), 0, 0, 0);
+
+        effect.render(context);
+
+        assertEquals(0, directionCalls[0]);
+        assertEquals(0f, emitter.firstDirectionX, 1e-6f);
+    }
+
     private static final class RecordingEmitter implements ParticleEmitter {
+        private final boolean requiresDirection;
         private int calls;
         private float firstLocalX;
         private double firstWorldX;
         private double secondWorldY;
         private float firstDirectionX;
+
+        private RecordingEmitter() {
+            this(true);
+        }
+
+        private RecordingEmitter(boolean requiresDirection) {
+            this.requiresDirection = requiresDirection;
+        }
+
+        @Override
+        public boolean requiresDirection() {
+            return requiresDirection;
+        }
 
         @Override
         public void spawn(

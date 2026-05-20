@@ -55,6 +55,11 @@ public class StandardParticleEmitter<T> implements ParticleEmitter {
     }
 
     @Override
+    public boolean requiresDirection() {
+        return false;
+    }
+
+    @Override
     public void spawn(
             EffectContext context,
             float localX,
