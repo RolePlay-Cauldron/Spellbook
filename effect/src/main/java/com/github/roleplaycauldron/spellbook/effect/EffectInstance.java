@@ -61,15 +61,14 @@ public class EffectInstance {
     public void render(EffectContext context, EffectRenderState state) {
         PointBuffer points = state.points();
         points.clear();
-        shape.sample(
-                state.shapeContext(
-                        context.step(),
-                        context.timeSeconds(),
-                        context.origin(),
-                        context.target()
-                ),
-                points
+        state.clearScratchBuffers();
+        ShapeContext shapeContext = state.shapeContext(
+                context.step(),
+                context.timeSeconds(),
+                context.origin(),
+                context.target()
         );
+        shape.sample(shapeContext, points);
 
         for (Transform transform : transforms) {
             Transform.PreparedTransform prepared = transform.prepare(context);
