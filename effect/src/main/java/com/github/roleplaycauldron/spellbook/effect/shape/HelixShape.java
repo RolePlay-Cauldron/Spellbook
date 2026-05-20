@@ -1,10 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
-import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a helical shape for particle or point generation, defined by configurable strands,
@@ -27,7 +24,7 @@ public final class HelixShape implements Shape {
 
     /**
      * Constructs a HelixShape object with the specified parameters to define the properties
-     * of a helical shape. The helix is comprised of multiple strands, with particles
+     * of a helical shape. The helix consists of multiple strands, with particles
      * uniformly distributed along each strand, spiraling around a central axis.
      *
      * @param strands            the number of strands in the helix; must be greater than 0
@@ -72,9 +69,8 @@ public final class HelixShape implements Shape {
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
-        List<Vector3f> result = new ArrayList<>(strands * particlesPerStrand);
-
+    public void sample(ShapeContext context, PointBuffer points) {
+        points.ensureCapacity(points.size() + strands * particlesPerStrand);
         float baseRotation = context.step() * rotationSpeed;
 
         for (int i = 0; i < strands; i++) {
@@ -93,9 +89,8 @@ public final class HelixShape implements Shape {
                 float y = ratio * height;
                 float z = (float) Math.sin(angle) * radius;
 
-                result.add(new Vector3f(x, y, z));
+                points.add(x, y, z);
             }
         }
-        return result;
     }
 }

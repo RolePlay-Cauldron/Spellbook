@@ -1,9 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
-import org.joml.Vector3f;
-
-import java.util.List;
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 
 /**
  * Represents a shape that can be used to generate particles
@@ -12,13 +10,13 @@ import java.util.List;
 public interface Shape {
 
     /**
-     * Generates a list of 3D points within the shape based on the provided context.
+     * Writes 3D points within the shape into the provided frame-local point buffer.
      * This method is typically used for generating particles or other effects
      * at specific locations within the shape.
      *
      * @param context the shape context containing information such as the step,
      *                elapsed time, origin, and target location
-     * @return a list of 3D vectors representing points within the shape
+     * @param points  mutable frame-local point buffer to append points to
      */
-    List<Vector3f> sample(ShapeContext context);
+    void sample(ShapeContext context, PointBuffer points);
 }

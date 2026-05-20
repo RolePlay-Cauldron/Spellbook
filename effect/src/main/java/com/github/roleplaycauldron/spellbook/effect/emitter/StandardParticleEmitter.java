@@ -1,7 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.emitter;
 
+import com.github.roleplaycauldron.spellbook.effect.EffectContext;
 import com.github.roleplaycauldron.spellbook.effect.ParticleSpec;
-import com.github.roleplaycauldron.spellbook.effect.SpawnContext;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -17,6 +17,8 @@ import java.util.Collection;
 public class StandardParticleEmitter<T> implements ParticleEmitter {
 
     private final ParticleSpec<T> spec;
+
+    private final Location location = new Location(null, 0, 0, 0);
 
     /**
      * Creates a new StandardParticleEmitter with the given {@link ParticleSpec}
@@ -53,18 +55,27 @@ public class StandardParticleEmitter<T> implements ParticleEmitter {
     }
 
     @Override
-    public void spawn(SpawnContext context) {
-        Collection<? extends Player> viewers = context.effectContext().viewers();
+    public void spawn(
+            EffectContext context,
+            float localX,
+            float localY,
+            float localZ,
+            double worldX,
+            double worldY,
+            double worldZ,
+            float directionX,
+            float directionY,
+            float directionZ
+    ) {
+        Collection<? extends Player> viewers = context.viewers();
         if (viewers.isEmpty()) {
             return;
         }
 
-        Location location = new Location(
-                context.effectContext().world(),
-                context.worldPoint().x(),
-                context.worldPoint().y(),
-                context.worldPoint().z()
-        );
+        location.setWorld(context.world());
+        location.setX(worldX);
+        location.setY(worldY);
+        location.setZ(worldZ);
 
         for (Player viewer : viewers) {
             viewer.spawnParticle(

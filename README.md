@@ -25,6 +25,7 @@ Remember to bring your own Database Driver!
 __**Spellbook-Effect:**__ Display gorgeous Particle Effects (Paper only)
 
 - Create 2D and 3D Effects of different Shapes or Forms
+- Effects use a mutable `PointBuffer` render pipeline. Custom shapes append points to the buffer, transforms mutate points in place, modifiers edit the buffer, and emitters receive local/world coordinate values directly.
 
 This module only supports Paper as it interacts with the World and Players
 

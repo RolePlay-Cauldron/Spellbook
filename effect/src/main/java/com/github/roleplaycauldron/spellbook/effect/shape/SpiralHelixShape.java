@@ -1,10 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
-import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a 3D spiral helix shape composed of multiple strands.
@@ -100,9 +97,8 @@ public final class SpiralHelixShape implements Shape {
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
-        List<Vector3f> result = new ArrayList<>(strands * particlesPerStrand);
-
+    public void sample(ShapeContext context, PointBuffer points) {
+        points.ensureCapacity(points.size() + strands * particlesPerStrand);
         float rotation = context.step() * rotationSpeed;
         float curveDirection = reverse ? -1.0f : 1.0f;
 
@@ -121,10 +117,8 @@ public final class SpiralHelixShape implements Shape {
                 float z = (float) (Math.sin(angle) * currentRadius);
                 float y = ratio * height;
 
-                result.add(new Vector3f(x, y, z));
+                points.add(x, y, z);
             }
         }
-
-        return result;
     }
 }

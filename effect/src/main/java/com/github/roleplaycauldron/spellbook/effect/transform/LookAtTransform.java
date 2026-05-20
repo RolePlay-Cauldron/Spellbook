@@ -1,6 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.transform;
 
 import com.github.roleplaycauldron.spellbook.effect.EffectContext;
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import org.bukkit.Location;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -45,12 +46,13 @@ public class LookAtTransform implements Transform {
     }
 
     @Override
-    public Vector3f apply(Vector3f point, EffectContext context) {
+    public PreparedTransform prepare(EffectContext context) {
         Location origin = context.origin();
         Location target = context.target();
 
         if (target == null) {
-            return point;
+            return (points, index) -> {
+            };
         }
 
         Vector3f direction = new Vector3f(
@@ -60,7 +62,8 @@ public class LookAtTransform implements Transform {
         );
 
         if (direction.lengthSquared() < 1e-6) {
-            return point;
+            return (points, index) -> {
+            };
         }
 
         direction.normalize();
@@ -69,8 +72,16 @@ public class LookAtTransform implements Transform {
                 direction.x, direction.y, direction.z
         );
 
-        Vector3f result = new Vector3f(point);
-        rotation.transform(result);
-        return result;
+        Vector3f point = new Vector3f();
+        return (points, index) -> {
+            points.get(index, point);
+            rotation.transform(point);
+            points.set(index, point.x, point.y, point.z);
+        };
+    }
+
+    @Override
+    public void apply(PointBuffer points, int index, EffectContext context) {
+        prepare(context).apply(points, index);
     }
 }

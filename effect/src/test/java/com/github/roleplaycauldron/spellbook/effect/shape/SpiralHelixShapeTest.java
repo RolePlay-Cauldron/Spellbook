@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -34,7 +35,7 @@ class SpiralHelixShapeTest {
     @Test
     void testSamplesExpectedPointCountAndBounds() {
         SpiralHelixShape shape = new SpiralHelixShape(2, 10, 3f, 6f, 2f, 0f);
-        List<Vector3f> points = shape.sample(createContext(0));
+        List<Vector3f> points = sample(shape, createContext(0));
 
         assertEquals(20, points.size());
 
@@ -50,8 +51,8 @@ class SpiralHelixShapeTest {
     void testRotationSpeedDependsOnStep() {
         SpiralHelixShape shape = new SpiralHelixShape(2, 10, 2f, 4f, 1f, 0.25f);
 
-        Vector3f pointStep0 = shape.sample(createContext(0)).get(0);
-        Vector3f pointStep1 = shape.sample(createContext(1)).get(0);
+        Vector3f pointStep0 = sample(shape, createContext(0)).get(0);
+        Vector3f pointStep1 = sample(shape, createContext(1)).get(0);
 
         assertNotEquals(pointStep0.x, pointStep1.x, 1e-6f);
     }
@@ -59,7 +60,7 @@ class SpiralHelixShapeTest {
     @Test
     void testLastPointReachesConfiguredRadiusAndHeight() {
         SpiralHelixShape shape = new SpiralHelixShape(1, 4, 2f, 8f, 1f, 0f);
-        List<Vector3f> points = shape.sample(createContext(0));
+        List<Vector3f> points = sample(shape, createContext(0));
 
         Vector3f last = points.get(points.size() - 1);
 
@@ -72,5 +73,11 @@ class SpiralHelixShapeTest {
         Location origin = new Location(world, 0, 0, 0);
         Location target = new Location(world, 0, 0, 1);
         return new ShapeContext(step, 0.0, origin, target);
+    }
+
+    private List<Vector3f> sample(Shape shape, ShapeContext context) {
+        PointBuffer buffer = new PointBuffer();
+        shape.sample(context, buffer);
+        return buffer.toVectorList();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.roleplaycauldron.spellbook.effect.transform;
 
 import com.github.roleplaycauldron.spellbook.effect.EffectContext;
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import org.joml.Vector3f;
 
 /**
@@ -31,7 +32,7 @@ public class TranslateTransform implements Transform {
     }
 
     @Override
-    public Vector3f apply(Vector3f point, EffectContext context) {
-        return new Vector3f(point).add(translation);
+    public void apply(PointBuffer points, int index, EffectContext context) {
+        points.translate(index, translation.x, translation.y, translation.z);
     }
 }

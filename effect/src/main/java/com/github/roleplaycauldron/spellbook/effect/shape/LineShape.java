@@ -1,10 +1,8 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.joml.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A {@code LineShape} represents a straight-line shape that generates a series of 3D points
@@ -30,27 +28,25 @@ public final class LineShape implements Shape {
     }
 
     @Override
-    public List<Vector3f> sample(ShapeContext context) {
+    public void sample(ShapeContext context, PointBuffer points) {
         if (context.origin() == null || context.target() == null) {
-            return new ArrayList<>();
+            return;
         }
 
         Vector3f origin = context.origin().toVector().toVector3f();
         Vector3f target = context.target().toVector().toVector3f();
         Vector3f direction = new Vector3f(target).sub(origin);
 
-        List<Vector3f> result = new ArrayList<>(points);
+        points.ensureCapacity(points.size() + this.points);
 
-        if (points == 1) {
-            result.add(new Vector3f(0, 0, 0));
-            return result;
+        if (this.points == 1) {
+            points.add(0, 0, 0);
+            return;
         }
 
-        for (int i = 0; i < points; i++) {
-            float t = (float) i / (points - 1);
-            result.add(new Vector3f(direction).mul(t));
+        for (int i = 0; i < this.points; i++) {
+            float t = (float) i / (this.points - 1);
+            points.add(direction.x * t, direction.y * t, direction.z * t);
         }
-
-        return result;
     }
 }

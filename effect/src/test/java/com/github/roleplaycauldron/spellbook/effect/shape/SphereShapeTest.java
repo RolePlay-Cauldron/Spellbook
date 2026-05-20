@@ -1,5 +1,6 @@
 package com.github.roleplaycauldron.spellbook.effect.shape;
 
+import com.github.roleplaycauldron.spellbook.effect.PointBuffer;
 import com.github.roleplaycauldron.spellbook.effect.ShapeContext;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,7 +32,7 @@ class SphereShapeTest {
         SphereShape shape = new SphereShape(2f, 64);
         ShapeContext context = createContext(0);
 
-        List<Vector3f> points = shape.sample(context);
+        List<Vector3f> points = sample(shape, context);
         assertEquals(64, points.size());
 
         for (Vector3f point : points) {
@@ -43,8 +44,8 @@ class SphereShapeTest {
     void testAngularSpeedDependsOnStep() {
         SphereShape shape = new SphereShape(1f, 64, 0.25f);
 
-        Vector3f pointStep0 = shape.sample(createContext(0)).get(1);
-        Vector3f pointStep1 = shape.sample(createContext(1)).get(1);
+        Vector3f pointStep0 = sample(shape, createContext(0)).get(1);
+        Vector3f pointStep1 = sample(shape, createContext(1)).get(1);
 
         assertNotEquals(pointStep0.x, pointStep1.x, 1e-6f);
     }
@@ -54,5 +55,11 @@ class SphereShapeTest {
         Location origin = new Location(world, 0, 0, 0);
         Location target = new Location(world, 0, 0, 1);
         return new ShapeContext(step, 0.0, origin, target);
+    }
+
+    private List<Vector3f> sample(Shape shape, ShapeContext context) {
+        PointBuffer buffer = new PointBuffer();
+        shape.sample(context, buffer);
+        return buffer.toVectorList();
     }
 }

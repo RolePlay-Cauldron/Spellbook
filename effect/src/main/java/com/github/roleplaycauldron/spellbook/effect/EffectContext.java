@@ -47,6 +47,6 @@ public record EffectContext(
      * @param timeSeconds The elapsed time in seconds used for time-based calculations.
      */
     public EffectContext {
-        viewers = viewers == null ? List.of() : List.copyOf(viewers);
+        viewers = viewers == null ? List.of() : viewers;
     }
 }

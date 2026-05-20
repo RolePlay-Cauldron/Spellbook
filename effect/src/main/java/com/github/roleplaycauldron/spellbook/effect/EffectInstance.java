@@ -3,7 +3,6 @@ package com.github.roleplaycauldron.spellbook.effect;
 import com.github.roleplaycauldron.spellbook.effect.emitter.ParticleEmitter;
 import com.github.roleplaycauldron.spellbook.effect.shape.Shape;
 import com.github.roleplaycauldron.spellbook.effect.transform.Transform;
-import org.bukkit.Location;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -22,6 +21,8 @@ public class EffectInstance {
     private final ParticleEmitter particleEmitter;
 
     private final DirectionProvider directionProvider;
+
+    private final PointBuffer points = new PointBuffer();
 
     /**
      * Creates a new EffectInstance
@@ -50,40 +51,51 @@ public class EffectInstance {
      * @param context the context to render the effect at
      */
     public void render(EffectContext context) {
-        List<Vector3f> points = shape.sample(
+        points.clear();
+        shape.sample(
                 new ShapeContext(
                         context.step(),
                         context.timeSeconds(),
                         context.origin(),
                         context.target()
-                )
+                ),
+                points
         );
 
         for (Transform transform : transforms) {
+            Transform.PreparedTransform prepared = transform.prepare(context);
             for (int i = 0; i < points.size(); i++) {
-                points.set(i, transform.apply(points.get(i), context));
+                prepared.apply(points, i);
             }
         }
 
         for (EffectModifier modifier : modifiers) {
-            points = modifier.apply(points, context);
+            modifier.apply(points, context);
         }
 
-        for (Vector3f point : points) {
-            Location location = context.origin().clone().add(
-                    point.x(),
-                    point.y(),
-                    point.z()
-            );
+        Vector3f direction = new Vector3f();
+        double originX = context.origin().getX();
+        double originY = context.origin().getY();
+        double originZ = context.origin().getZ();
 
-            SpawnContext spawnContext = new SpawnContext(
-                    point,
-                    new Vector3f((float) location.getX(), (float) location.getY(), (float) location.getZ()),
-                    directionProvider.getDirection(point, context),
-                    context
-            );
+        for (int i = 0; i < points.size(); i++) {
+            float localX = points.x(i);
+            float localY = points.y(i);
+            float localZ = points.z(i);
+            directionProvider.getDirection(localX, localY, localZ, context, direction);
 
-            particleEmitter.spawn(spawnContext);
+            particleEmitter.spawn(
+                    context,
+                    localX,
+                    localY,
+                    localZ,
+                    originX + localX,
+                    originY + localY,
+                    originZ + localZ,
+                    direction.x,
+                    direction.y,
+                    direction.z
+            );
         }
     }
 }
