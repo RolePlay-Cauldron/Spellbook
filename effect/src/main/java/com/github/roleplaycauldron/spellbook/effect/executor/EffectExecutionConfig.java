@@ -13,6 +13,8 @@ import java.util.function.Function;
  */
 public final class EffectExecutionConfig {
 
+    private static final Function<ExecutionFrame, Integer> DEFAULT_STEP_FUNCTION = frame -> (int) frame.runIndex();
+
     private final long delayTicks;
 
     private final long periodTicks;
@@ -164,6 +166,10 @@ public final class EffectExecutionConfig {
         return stepFunction;
     }
 
+    boolean usesDefaultStepFunction() {
+        return stepFunction == DEFAULT_STEP_FUNCTION;
+    }
+
     /**
      * A builder class for constructing instances of {@link EffectExecutionConfig}.
      * <p>
@@ -188,7 +194,7 @@ public final class EffectExecutionConfig {
 
         private ViewerSource viewerSource;
 
-        private Function<ExecutionFrame, Integer> stepFunction = frame -> (int) frame.runIndex();
+        private Function<ExecutionFrame, Integer> stepFunction = DEFAULT_STEP_FUNCTION;
 
         private Builder() {
         }

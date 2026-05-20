@@ -22,8 +22,6 @@ public class EffectInstance {
 
     private final DirectionProvider directionProvider;
 
-    private final PointBuffer points = new PointBuffer();
-
     /**
      * Creates a new EffectInstance
      *
@@ -51,9 +49,20 @@ public class EffectInstance {
      * @param context the context to render the effect at
      */
     public void render(EffectContext context) {
+        render(context, new EffectRenderState());
+    }
+
+    /**
+     * Renders the effect using caller-owned reusable frame state.
+     *
+     * @param context the context to render the effect at
+     * @param state   mutable render state owned by the running effect
+     */
+    public void render(EffectContext context, EffectRenderState state) {
+        PointBuffer points = state.points();
         points.clear();
         shape.sample(
-                new ShapeContext(
+                state.shapeContext(
                         context.step(),
                         context.timeSeconds(),
                         context.origin(),
@@ -73,7 +82,7 @@ public class EffectInstance {
             modifier.apply(points, context);
         }
 
-        Vector3f direction = new Vector3f();
+        Vector3f direction = state.direction();
         double originX = context.origin().getX();
         double originY = context.origin().getY();
         double originZ = context.origin().getZ();
