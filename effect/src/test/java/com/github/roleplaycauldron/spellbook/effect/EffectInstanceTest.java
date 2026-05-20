@@ -116,6 +116,84 @@ class EffectInstanceTest {
     }
 
     @Test
+    void testScratchBuffersAreReusedAcrossFramesAndCleared() {
+        int[] firstScratch = new int[]{0};
+        Shape shape = (context, points) -> {
+            PointBuffer scratch = context.scratchBuffer(0);
+            int identity = System.identityHashCode(scratch);
+            if (firstScratch[0] == 0) {
+                firstScratch[0] = identity;
+            } else {
+                assertEquals(firstScratch[0], identity);
+                assertTrue(scratch.isEmpty());
+            }
+            scratch.add(1, 0, 0);
+            points.add(0, 0, 0);
+        };
+
+        EffectInstance effect = new EffectInstance(
+                shape,
+                List.of(),
+                List.of(),
+                new RecordingEmitter(),
+                (localX, localY, localZ, context, destination) -> destination.set(0, 0, 0)
+        );
+
+        World world = Mockito.mock(World.class);
+        EffectContext context = new EffectContext(world, new Location(world, 0, 0, 0), null, List.of(), 0, 0, 0);
+        EffectRenderState state = new EffectRenderState();
+
+        effect.render(context, state);
+        effect.render(context, state);
+    }
+
+    @Test
+    void testDirectShapeContextReusesIndexedScratchBuffers() {
+        ShapeContext context = new ShapeContext(0, 0, null, null);
+
+        assertSame(context.scratchBuffer(0), context.scratchBuffer(0));
+        assertNotSame(context.scratchBuffer(0), context.scratchBuffer(1));
+    }
+
+    @Test
+    void testScratchBuffersAreIsolatedBetweenRenderStates() {
+        int[] firstExecutionScratch = new int[]{0};
+        int[] secondExecutionScratch = new int[]{0};
+        int[] call = new int[]{0};
+        Shape shape = (context, points) -> {
+            call[0]++;
+            int identity = System.identityHashCode(context.scratchBuffer(0));
+            if (call[0] == 1) {
+                firstExecutionScratch[0] = identity;
+            } else if (call[0] == 2) {
+                secondExecutionScratch[0] = identity;
+            } else {
+                assertEquals(firstExecutionScratch[0], identity);
+            }
+            points.add(0, 0, 0);
+        };
+
+        EffectInstance effect = new EffectInstance(
+                shape,
+                List.of(),
+                List.of(),
+                new RecordingEmitter(),
+                (localX, localY, localZ, context, destination) -> destination.set(0, 0, 0)
+        );
+
+        World world = Mockito.mock(World.class);
+        EffectContext context = new EffectContext(world, new Location(world, 0, 0, 0), null, List.of(), 0, 0, 0);
+        EffectRenderState firstExecution = new EffectRenderState();
+        EffectRenderState secondExecution = new EffectRenderState();
+
+        effect.render(context, firstExecution);
+        effect.render(context, secondExecution);
+        effect.render(context, firstExecution);
+
+        assertNotEquals(firstExecutionScratch[0], secondExecutionScratch[0]);
+    }
+
+    @Test
     void testDirectRenderUsesFreshPointBuffer() {
         int[] firstIdentity = new int[]{0};
         Shape shape = (context, points) -> {

@@ -189,6 +189,10 @@ public final class PointBuffer {
 
     /**
      * Removes the point at the given index while preserving order.
+     * <p>
+     * This operation is O(n) because trailing points are shifted left. In hot
+     * paths, prefer {@link #removeUnordered(int)} when point order does not
+     * matter, or clear and repopulate the buffer when removing many points.
      *
      * @param index point index
      */
@@ -203,6 +207,26 @@ public final class PointBuffer {
                     offset(index),
                     trailingPoints * COMPONENTS
             );
+        }
+        size--;
+    }
+
+    /**
+     * Removes the point at the given index without preserving order.
+     * <p>
+     * This operation is O(1). If the removed point is not the last point, the
+     * last point is moved into the removed point's slot.
+     *
+     * @param index point index
+     */
+    public void removeUnordered(int index) {
+        int removeOffset = checkedOffset(index);
+        int last = size - 1;
+        if (index != last) {
+            int lastOffset = offset(last);
+            coordinates[removeOffset] = coordinates[lastOffset];
+            coordinates[removeOffset + 1] = coordinates[lastOffset + 1];
+            coordinates[removeOffset + 2] = coordinates[lastOffset + 2];
         }
         size--;
     }
