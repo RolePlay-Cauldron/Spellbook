@@ -253,7 +253,7 @@ final class EffectConfigValues {
             return booleanValue;
         }
 
-        throw new EffectConfigException(path, "Expected boolean, got " + typeName(value));
+        throw new EffectConfigException(path, String.format("Expected boolean, got %s", typeName(value)));
     }
 
     /**
@@ -275,7 +275,7 @@ final class EffectConfigValues {
         try {
             return Enum.valueOf(enumType, value.toUpperCase(Locale.ROOT).replace('-', '_'));
         } catch (IllegalArgumentException exception) {
-            throw new EffectConfigException(path, "Unknown " + enumType.getSimpleName() + " value '" + value + "'", exception);
+            throw new EffectConfigException(path, String.format("Unknown %s value '%s'", enumType.getSimpleName(), value), exception);
         }
     }
 
@@ -312,8 +312,7 @@ final class EffectConfigValues {
      * @return refined field path if one can be derived, otherwise {@code path}
      */
     /* default */
-    static String fieldPathForException(ConfigurationSection section, String path, IllegalArgumentException exception
-    ) {
+    static String fieldPathForException(ConfigurationSection section, String path, IllegalArgumentException exception) {
         String message = exception.getMessage();
         if (message == null || message.isBlank()) {
             return path;
@@ -390,7 +389,7 @@ final class EffectConfigValues {
      */
     private static int requireIntegerValue(Object value, String path) {
         if (!(value instanceof Number number)) {
-            throw new EffectConfigException(path, "Expected integer, got " + typeName(value));
+            throw new EffectConfigException(path, String.format("Expected integer, got %s", typeName(value)));
         }
 
         if (!(value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long)) {
@@ -399,7 +398,7 @@ final class EffectConfigValues {
 
         long longValue = number.longValue();
         if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
-            throw new EffectConfigException(path, "Expected integer, got " + value);
+            throw new EffectConfigException(path, String.format("Expected integer, got %s", value));
         }
 
         return (int) longValue;
@@ -415,10 +414,10 @@ final class EffectConfigValues {
      */
     private static int integerFromFloatingValue(double value, String path) {
         if (!Double.isFinite(value)) {
-            throw new EffectConfigException(path, "Expected finite integer, got " + value);
+            throw new EffectConfigException(path, String.format("Expected finite integer, got %s", value));
         }
         if (value % 1 != 0 || value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
-            throw new EffectConfigException(path, "Expected integer, got " + value);
+            throw new EffectConfigException(path, String.format("Expected integer, got %s", value));
         }
         return (int) value;
     }
@@ -433,17 +432,17 @@ final class EffectConfigValues {
      */
     private static float requireFloatValue(Object value, String path) {
         if (!(value instanceof Number number)) {
-            throw new EffectConfigException(path, "Expected number, got " + typeName(value));
+            throw new EffectConfigException(path, String.format("Expected number, got %s", typeName(value)));
         }
 
         double doubleValue = number.doubleValue();
         if (!Double.isFinite(doubleValue)) {
-            throw new EffectConfigException(path, "Expected finite number, got " + doubleValue);
+            throw new EffectConfigException(path, String.format("Expected finite number, got %f", doubleValue));
         }
 
         float floatValue = number.floatValue();
         if (!Float.isFinite(floatValue)) {
-            throw new EffectConfigException(path, "Expected finite number, got " + doubleValue);
+            throw new EffectConfigException(path, String.format("Expected finite number, got %f", doubleValue));
         }
 
         return floatValue;
@@ -459,12 +458,12 @@ final class EffectConfigValues {
      */
     private static double requireDoubleValue(Object value, String path) {
         if (!(value instanceof Number number)) {
-            throw new EffectConfigException(path, "Expected number, got " + typeName(value));
+            throw new EffectConfigException(path, String.format("Expected number, got %s", typeName(value)));
         }
 
         double doubleValue = number.doubleValue();
         if (!Double.isFinite(doubleValue)) {
-            throw new EffectConfigException(path, "Expected finite number, got " + doubleValue);
+            throw new EffectConfigException(path, String.format("Expected finite number, got %f", doubleValue));
         }
 
         return doubleValue;

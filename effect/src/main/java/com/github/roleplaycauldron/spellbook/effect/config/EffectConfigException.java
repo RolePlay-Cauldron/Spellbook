@@ -39,7 +39,7 @@ public class EffectConfigException extends RuntimeException {
     }
 
     private static String formatMessage(String path, String detail) {
-        return path + ": " + detail;
+        return String.format("%s: %s", path, detail);
     }
 
     /**

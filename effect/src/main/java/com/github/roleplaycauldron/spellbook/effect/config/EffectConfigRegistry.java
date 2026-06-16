@@ -51,7 +51,7 @@ final class EffectConfigRegistry {
         String normalizedType = EffectConfigValues.normalizeType(type);
         Objects.requireNonNull(parser, "parser");
         if (parsers.containsKey(normalizedType)) {
-            throw new IllegalArgumentException(parserKind + " parser already registered for type: " + normalizedType);
+            throw new IllegalArgumentException(String.format("%s parser already registered for type: %s", parserKind, normalizedType));
         }
         parsers.put(normalizedType, parser);
     }
@@ -74,7 +74,8 @@ final class EffectConfigRegistry {
      * @throws NullPointerException     if the parser is {@code null}
      * @throws IllegalArgumentException if a parser for the normalized type already exists
      */
-    /* default */ void registerShape(String type, ShapeConfigParser parser) {
+    /* default */
+    void registerShape(String type, ShapeConfigParser parser) {
         registerUnique(shapeParsers, type, parser, "Shape");
     }
 
@@ -86,7 +87,8 @@ final class EffectConfigRegistry {
      * @throws NullPointerException     if the parser is {@code null}
      * @throws IllegalArgumentException if a parser for the normalized type already exists
      */
-    /* default */ void registerTransform(String type, TransformConfigParser parser) {
+    /* default */
+    void registerTransform(String type, TransformConfigParser parser) {
         registerUnique(transformParsers, type, parser, "Transform");
     }
 
@@ -98,7 +100,8 @@ final class EffectConfigRegistry {
      * @throws NullPointerException     if the parser is {@code null}
      * @throws IllegalArgumentException if a parser for the normalized type already exists
      */
-    /* default */ void registerModifier(String type, ModifierConfigParser parser) {
+    /* default */
+    void registerModifier(String type, ModifierConfigParser parser) {
         registerUnique(modifierParsers, type, parser, "Modifier");
     }
 
@@ -110,7 +113,8 @@ final class EffectConfigRegistry {
      * @throws NullPointerException     if the parser is {@code null}
      * @throws IllegalArgumentException if a parser for the normalized type already exists
      */
-    /* default */ void registerDirection(String type, DirectionConfigParser parser) {
+    /* default */
+    void registerDirection(String type, DirectionConfigParser parser) {
         registerUnique(directionParsers, type, parser, "Direction");
     }
 
@@ -122,7 +126,8 @@ final class EffectConfigRegistry {
      * @throws NullPointerException     if the parser is {@code null}
      * @throws IllegalArgumentException if a parser for the normalized type already exists
      */
-    /* default */ void registerParticleData(String type, ParticleDataConfigParser parser) {
+    /* default */
+    void registerParticleData(String type, ParticleDataConfigParser parser) {
         registerUnique(particleDataParsers, type, parser, "Particle data");
     }
 
@@ -132,7 +137,8 @@ final class EffectConfigRegistry {
      * @param type the parser type
      * @return the shape parser, or {@code null} if no parser is registered
      */
-    /* default */ ShapeConfigParser shapeParser(String type) {
+    /* default */
+    ShapeConfigParser shapeParser(String type) {
         return shapeParsers.get(EffectConfigValues.normalizeType(type));
     }
 
@@ -142,7 +148,8 @@ final class EffectConfigRegistry {
      * @param type the parser type
      * @return the transform parser, or {@code null} if no parser is registered
      */
-    /* default */ TransformConfigParser transformParser(String type) {
+    /* default */
+    TransformConfigParser transformParser(String type) {
         return transformParsers.get(EffectConfigValues.normalizeType(type));
     }
 
@@ -152,7 +159,8 @@ final class EffectConfigRegistry {
      * @param type the parser type
      * @return the modifier parser, or {@code null} if no parser is registered
      */
-    /* default */ ModifierConfigParser modifierParser(String type) {
+    /* default */
+    ModifierConfigParser modifierParser(String type) {
         return modifierParsers.get(EffectConfigValues.normalizeType(type));
     }
 
@@ -162,7 +170,8 @@ final class EffectConfigRegistry {
      * @param type the parser type
      * @return the direction parser, or {@code null} if no parser is registered
      */
-    /* default */ DirectionConfigParser directionParser(String type) {
+    /* default */
+    DirectionConfigParser directionParser(String type) {
         return directionParsers.get(EffectConfigValues.normalizeType(type));
     }
 
@@ -172,7 +181,8 @@ final class EffectConfigRegistry {
      * @param type the parser type
      * @return the particle data parser, or {@code null} if no parser is registered
      */
-    /* default */ ParticleDataConfigParser particleDataParser(String type) {
+    /* default */
+    ParticleDataConfigParser particleDataParser(String type) {
         return particleDataParsers.get(EffectConfigValues.normalizeType(type));
     }
 
@@ -181,7 +191,8 @@ final class EffectConfigRegistry {
      *
      * @return sorted set of known shape parser types
      */
-    /* default */ Set<String> knownShapeTypes() {
+    /* default */
+    Set<String> knownShapeTypes() {
         return knownTypes(shapeParsers);
     }
 
@@ -190,7 +201,8 @@ final class EffectConfigRegistry {
      *
      * @return sorted set of known transform parser types
      */
-    /* default */ Set<String> knownTransformTypes() {
+    /* default */
+    Set<String> knownTransformTypes() {
         return knownTypes(transformParsers);
     }
 
@@ -199,7 +211,8 @@ final class EffectConfigRegistry {
      *
      * @return sorted set of known modifier parser types
      */
-    /* default */ Set<String> knownModifierTypes() {
+    /* default */
+    Set<String> knownModifierTypes() {
         return knownTypes(modifierParsers);
     }
 
@@ -208,7 +221,8 @@ final class EffectConfigRegistry {
      *
      * @return sorted set of known direction parser types
      */
-    /* default */ Set<String> knownDirectionTypes() {
+    /* default */
+    Set<String> knownDirectionTypes() {
         return knownTypes(directionParsers);
     }
 
@@ -217,7 +231,8 @@ final class EffectConfigRegistry {
      *
      * @return sorted set of known particle data parser types
      */
-    /* default */ Set<String> knownParticleDataTypes() {
+    /* default */
+    Set<String> knownParticleDataTypes() {
         return knownTypes(particleDataParsers);
     }
 }

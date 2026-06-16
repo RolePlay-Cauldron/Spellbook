@@ -124,7 +124,7 @@ final class DefaultEffectConfigParsers {
             case "resample-target-to-source" -> MorphPointStrategies.resampleTargetToSource();
             case "resample-to-max" -> MorphPointStrategies.resampleToMax();
             default ->
-                    throw new EffectConfigException(context.path("strategy"), "Unknown morph point strategy '" + strategy + "'");
+                    throw new EffectConfigException(context.path("strategy"), String.format("Unknown morph point strategy '%s'", strategy));
         });
         return builder.build();
     }
@@ -156,7 +156,8 @@ final class DefaultEffectConfigParsers {
                     EffectConfigValues.requireDouble(section, "start-seconds", path + ".start-seconds"),
                     EffectConfigValues.requireDouble(section, "duration-seconds", path + ".duration-seconds")
             );
-            default -> throw new EffectConfigException(path + ".type", "Unknown morph progress type '" + type + "'");
+            default ->
+                    throw new EffectConfigException(path + ".type", String.format("Unknown morph progress type '%s'", type));
         };
     }
 

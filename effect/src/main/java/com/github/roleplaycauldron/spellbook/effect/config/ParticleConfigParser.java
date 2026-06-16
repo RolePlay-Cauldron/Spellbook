@@ -84,7 +84,8 @@ final class ParticleConfigParser {
         String dataType = EffectConfigValues.requireString(dataSection, "type", path + ".data.type");
         ParticleDataConfigParser dataParser = registry.particleDataParser(dataType);
         if (dataParser == null) {
-            throw new EffectConfigException(path + ".data.type", "Unknown particle data type '" + dataType + "'. Registered types: " + registry.knownParticleDataTypes());
+            throw new EffectConfigException(path + ".data.type",
+                    String.format("Unknown particle data type '%s'. Registered types: %s", dataType, registry.knownParticleDataTypes()));
         }
         try {
             return dataParser.parse(particle, dataSection, new EffectConfigContext(parser, path + ".data"));
@@ -112,15 +113,15 @@ final class ParticleConfigParser {
         Class<?> expectedType = particle.getDataType();
         if (expectedType == Void.class) {
             if (data != null) {
-                throw new EffectConfigException(path, "Particle " + particle + " does not accept data, got " + data.getClass().getSimpleName());
+                throw new EffectConfigException(path, String.format("Particle %s does not accept data, got %s", particle, data.getClass().getSimpleName()));
             }
             return;
         }
         if (data == null) {
-            throw new EffectConfigException(path, "Particle " + particle + " requires data of type " + expectedType.getSimpleName());
+            throw new EffectConfigException(path, String.format("Particle %s requires data of type %s", particle, expectedType.getSimpleName()));
         }
         if (!expectedType.isInstance(data)) {
-            throw new EffectConfigException(path, "Expected particle data type " + expectedType.getSimpleName() + ", got " + data.getClass().getSimpleName());
+            throw new EffectConfigException(path, String.format("Expected particle data type %s, got %s", expectedType.getSimpleName(), data.getClass().getSimpleName()));
         }
     }
 }

@@ -183,7 +183,8 @@ public final class EffectConfigParser {
      * @return parsed shape
      * @throws EffectConfigException if the section is invalid or the type is unknown
      */
-    /* default */ Shape parseShape(ConfigurationSection section, String path) {
+    /* default */
+    Shape parseShape(ConfigurationSection section, String path) {
         return parseTyped(section, path, "shape", registry::shapeParser,
                 registry.knownShapeTypes(), parser -> parser.parse(section, new EffectConfigContext(this, path))
         );
@@ -197,7 +198,8 @@ public final class EffectConfigParser {
      * @return parsed transform
      * @throws EffectConfigException if the section is invalid or the type is unknown
      */
-    /* default */ Transform parseTransform(ConfigurationSection section, String path) {
+    /* default */
+    Transform parseTransform(ConfigurationSection section, String path) {
         return parseTyped(section, path, "transform", registry::transformParser,
                 registry.knownTransformTypes(), parser -> parser.parse(section, new EffectConfigContext(this, path))
         );
@@ -211,7 +213,8 @@ public final class EffectConfigParser {
      * @return parsed effect modifier
      * @throws EffectConfigException if the section is invalid or the type is unknown
      */
-    /* default */ EffectModifier parseModifier(ConfigurationSection section, String path) {
+    /* default */
+    EffectModifier parseModifier(ConfigurationSection section, String path) {
         return parseTyped(section, path, "modifier", registry::modifierParser,
                 registry.knownModifierTypes(), parser -> parser.parse(section, new EffectConfigContext(this, path))
         );
@@ -225,7 +228,8 @@ public final class EffectConfigParser {
      * @return parsed direction provider
      * @throws EffectConfigException if the section is invalid or the type is unknown
      */
-    /* default */ DirectionProvider parseDirection(ConfigurationSection section, String path) {
+    /* default */
+    DirectionProvider parseDirection(ConfigurationSection section, String path) {
         return parseTyped(section, path, "direction", registry::directionParser,
                 registry.knownDirectionTypes(), parser -> parser.parse(section, new EffectConfigContext(this, path))
         );
@@ -239,7 +243,8 @@ public final class EffectConfigParser {
      * @return parsed particle emitter
      * @throws EffectConfigException if the section is invalid
      */
-    /* default */ StandardParticleEmitter<Object> parseParticle(ConfigurationSection section, String path) {
+    /* default */
+    StandardParticleEmitter<Object> parseParticle(ConfigurationSection section, String path) {
         return particleParser.parse(section, path);
     }
 
@@ -266,10 +271,11 @@ public final class EffectConfigParser {
             Set<String> knownTypes,
             Function<P, T> invoker
     ) {
-        String type = EffectConfigValues.requireString(section, "type", path + ".type");
+        String type = EffectConfigValues.requireString(section, "type", String.format("%s.type", path));
         P parser = parserLookup.apply(type);
         if (parser == null) {
-            throw new EffectConfigException(path + ".type", "Unknown " + component + " type '" + type + "'. Registered types: " + knownTypes);
+            throw new EffectConfigException(String.format("%s.type", path),
+                    String.format("Unknown %s type '%s'. Registered types: %s", component, type, knownTypes));
         }
         try {
             return invoker.apply(parser);
@@ -279,7 +285,7 @@ public final class EffectConfigParser {
             throw new EffectConfigException(EffectConfigValues.fieldPathForException(section, path, exception),
                     exception.getMessage(), exception);
         } catch (RuntimeException exception) {
-            throw new EffectConfigException(path, "Failed to parse " + component, exception);
+            throw new EffectConfigException(path, String.format("Failed to parse %s", component), exception);
         }
     }
 
