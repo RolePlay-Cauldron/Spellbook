@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.roleplay-cauldron</groupId>
         <artifactId>spellbook</artifactId>
-        <version>0.0.10-alpha</version>
+        <version>0.0.11-alpha</version>
     </parent>
 
     <artifactId>spellbook-database</artifactId>
