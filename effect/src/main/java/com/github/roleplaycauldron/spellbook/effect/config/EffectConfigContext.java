@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * The context exposes the current configuration path, nested parse operations,
  * and common field validation helpers. Component parsers should use it when
- * parsing child components or required values so nested failures retain useful
+ * parsing child components or required values, so nested failures retain useful
  * paths and produce consistent error details.
  */
 public final class EffectConfigContext {
@@ -176,7 +176,7 @@ public final class EffectConfigContext {
      * @return child section
      */
     public ConfigurationSection requireSection(ConfigurationSection parent, String key) {
-        return EffectConfigParser.requiredSection(parent, key, path(key));
+        return EffectConfigValues.requiredSection(parent, key, path(key));
     }
 
     /**
@@ -187,7 +187,7 @@ public final class EffectConfigContext {
      * @return child section, or {@code null} when absent
      */
     public ConfigurationSection optionalSection(ConfigurationSection parent, String key) {
-        return EffectConfigParser.optionalSection(parent, key, path(key));
+        return EffectConfigValues.optionalSection(parent, key, path(key));
     }
 
     /**
@@ -198,7 +198,7 @@ public final class EffectConfigContext {
      * @return indexed child sections
      */
     public List<EffectConfigParser.IndexedSection> sectionList(ConfigurationSection parent, String key) {
-        return EffectConfigParser.sectionList(parent, key, path(key));
+        return EffectConfigValues.sectionList(parent, key, path(key));
     }
 
     /**
@@ -209,7 +209,7 @@ public final class EffectConfigContext {
      * @return configured string
      */
     public String requireString(ConfigurationSection section, String key) {
-        return EffectConfigParser.requireString(section, key, path(key));
+        return EffectConfigValues.requireString(section, key, path(key));
     }
 
     /**
@@ -220,7 +220,7 @@ public final class EffectConfigContext {
      * @return configured integer
      */
     public int requireInt(ConfigurationSection section, String key) {
-        return EffectConfigParser.requireInt(section, key, path(key));
+        return EffectConfigValues.requireInt(section, key, path(key));
     }
 
     /**
@@ -231,7 +231,7 @@ public final class EffectConfigContext {
      * @return configured float
      */
     public float requireFloat(ConfigurationSection section, String key) {
-        return EffectConfigParser.requireFloat(section, key, path(key));
+        return EffectConfigValues.requireFloat(section, key, path(key));
     }
 
     /**
@@ -242,7 +242,7 @@ public final class EffectConfigContext {
      * @return configured double
      */
     public double requireDouble(ConfigurationSection section, String key) {
-        return EffectConfigParser.requireDouble(section, key, path(key));
+        return EffectConfigValues.requireDouble(section, key, path(key));
     }
 
     /**
@@ -254,7 +254,19 @@ public final class EffectConfigContext {
      * @return configured or fallback float
      */
     public float getFloat(ConfigurationSection section, String key, float fallback) {
-        return EffectConfigParser.getFloat(section, key, fallback);
+        return EffectConfigValues.getFloat(section, key, path(key), fallback);
+    }
+
+    /**
+     * Reads an optional boolean.
+     *
+     * @param section  configuration section
+     * @param key      value key
+     * @param fallback value returned when absent
+     * @return configured or fallback boolean
+     */
+    public boolean getBoolean(ConfigurationSection section, String key, boolean fallback) {
+        return EffectConfigValues.getBoolean(section, key, path(key), fallback);
     }
 
     /**
@@ -268,7 +280,7 @@ public final class EffectConfigContext {
      * @return parsed enum constant
      */
     public <E extends Enum<E>> E parseEnum(Class<E> enumType, String value, String key) {
-        return EffectConfigParser.parseEnum(enumType, value, path(key));
+        return EffectConfigValues.parseEnum(enumType, value, path(key));
     }
 
     /**
@@ -278,6 +290,6 @@ public final class EffectConfigContext {
      * @return normalized type
      */
     public String normalizeType(String type) {
-        return EffectConfigParser.normalizeType(type);
+        return EffectConfigValues.normalizeType(type);
     }
 }

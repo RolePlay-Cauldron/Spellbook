@@ -5,6 +5,7 @@ import com.github.roleplaycauldron.spellbook.effect.EffectContext;
 import com.github.roleplaycauldron.spellbook.effect.EffectInstance;
 import com.github.roleplaycauldron.spellbook.effect.shape.Shape;
 import com.github.roleplaycauldron.spellbook.effect.transform.TranslateTransform;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -115,13 +116,15 @@ class EffectConfigParserTest {
     void customRegistryParsersCanProvideComponentsAndParticleData() {
         MemoryConfiguration config = baseConfig();
         config.set("shape.type", "custom-point");
+        config.set("particle.type", "DUST");
         config.set("particle.data.type", "custom-data");
         config.set("transforms", List.of(Map.of("type", "custom-shift")));
+        Particle.DustOptions dustOptions = new Particle.DustOptions(Color.RED, 1.0f);
 
         EffectConfigParser parser = EffectConfigParser.defaults()
                 .registerShape("custom-point", (section, context) -> (shapeContext, points) -> points.add(1, 0, 0))
                 .registerTransform("custom-shift", (section, context) -> new TranslateTransform(2, 0, 0))
-                .registerParticleData("custom-data", (particle, section, context) -> "payload");
+                .registerParticleData("custom-data", (particle, section, context) -> dustOptions);
 
         Player viewer = Mockito.mock(Player.class);
         World world = Mockito.mock(World.class);
@@ -137,14 +140,14 @@ class EffectConfigParserTest {
 
         ArgumentCaptor<Location> location = ArgumentCaptor.forClass(Location.class);
         verify(viewer).spawnParticle(
-                eq(Particle.FLAME),
+                eq(Particle.DUST),
                 location.capture(),
                 anyInt(),
                 anyDouble(),
                 anyDouble(),
                 anyDouble(),
                 anyDouble(),
-                eq("payload")
+                eq(dustOptions)
         );
         assertTrue(Math.abs(location.getValue().getX() - 8.0) < 1e-6);
     }
@@ -303,6 +306,184 @@ class EffectConfigParserTest {
 
         assertEquals("shape.points", exception.path());
         assertEquals("Missing required integer", exception.detail());
+    }
+
+    @Test
+    void requiredIntRejectsStringValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", "many");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("shape.points", exception.path());
+        assertEquals("Expected integer, got String", exception.detail());
+    }
+
+    @Test
+    void requiredIntRejectsDecimalValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1.5);
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("shape.points", exception.path());
+        assertEquals("Expected integer, got 1.5", exception.detail());
+    }
+
+    @Test
+    void requiredFloatRejectsStringValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "sphere");
+        config.set("shape.radius", "wide");
+        config.set("shape.points", 8);
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("shape.radius", exception.path());
+        assertEquals("Expected number, got String", exception.detail());
+    }
+
+    @Test
+    void optionalFloatRejectsStringValuesWhenPresent() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "sphere");
+        config.set("shape.radius", 1.0);
+        config.set("shape.points", 8);
+        config.set("shape.angular-speed", "fast");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("shape.angular-speed", exception.path());
+        assertEquals("Expected number, got String", exception.detail());
+    }
+
+    @Test
+    void particleCountRejectsStringValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("particle.count", "three");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("particle.count", exception.path());
+        assertEquals("Expected integer, got String", exception.detail());
+    }
+
+    @Test
+    void particleCountRejectsDecimalValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("particle.count", 1.5);
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("particle.count", exception.path());
+        assertEquals("Expected integer, got 1.5", exception.detail());
+    }
+
+    @Test
+    void particleOffsetsRejectStringValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("particle.offset-x", "left");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("particle.offset-x", exception.path());
+        assertEquals("Expected number, got String", exception.detail());
+    }
+
+    @Test
+    void booleanFieldsRejectNonBooleanValues() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "moving-point");
+        config.set("shape.speed", 1.0);
+        config.set("shape.spacing", 1.0);
+        config.set("shape.amount-points", 3);
+        config.set("shape.ping-pong", "yes");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("shape.ping-pong", exception.path());
+        assertEquals("Expected boolean, got String", exception.detail());
+    }
+
+    @Test
+    void invalidDirectionValueThrowsInsteadOfBeingIgnored() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("direction", "toward-target");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("direction", exception.path());
+        assertEquals("Expected configuration section", exception.detail());
+    }
+
+    @Test
+    void duplicateRegistryRegistrationThrows() {
+        EffectConfigParser parser = EffectConfigParser.defaults();
+
+        IllegalArgumentException shapeException = assertThrows(IllegalArgumentException.class,
+                () -> parser.registerShape("SPHERE", (section, context) -> (shapeContext, points) -> {
+                }));
+        IllegalArgumentException transformException = assertThrows(IllegalArgumentException.class,
+                () -> parser.registerTransform("translate", (section, context) -> new TranslateTransform(0, 0, 0)));
+        IllegalArgumentException directionException = assertThrows(IllegalArgumentException.class,
+                () -> parser.registerDirection("toward_target", (section, context) -> (localX, localY, localZ, effectContext, destination) -> {
+                }));
+
+        parser.registerModifier("custom", (section, context) -> (points, effectContext) -> {
+        });
+        IllegalArgumentException modifierException = assertThrows(IllegalArgumentException.class,
+                () -> parser.registerModifier("CUSTOM", (section, context) -> (points, effectContext) -> {
+                }));
+
+        parser.registerParticleData("custom-data", (particle, section, context) -> null);
+        IllegalArgumentException particleDataException = assertThrows(IllegalArgumentException.class,
+                () -> parser.registerParticleData("custom_data", (particle, section, context) -> null));
+
+        assertEquals("Shape parser already registered for type: sphere", shapeException.getMessage());
+        assertEquals("Transform parser already registered for type: translate", transformException.getMessage());
+        assertEquals("Direction parser already registered for type: toward-target", directionException.getMessage());
+        assertEquals("Modifier parser already registered for type: custom", modifierException.getMessage());
+        assertEquals("Particle data parser already registered for type: custom-data", particleDataException.getMessage());
+    }
+
+    @Test
+    void incompatibleParticleDataThrowsDuringParsing() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("particle.type", "DUST");
+        config.set("particle.data.type", "bad-data");
+
+        EffectConfigParser parser = EffectConfigParser.defaults()
+                .registerParticleData("bad-data", (particle, section, context) -> "payload");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> parser.parse(config));
+
+        assertEquals("particle.data", exception.path());
+        assertEquals("Expected particle data type DustOptions, got String", exception.detail());
+    }
+
+    @Test
+    void particleRequiringDataFailsWhenDataIsAbsent() {
+        MemoryConfiguration config = baseConfig();
+        config.set("shape.type", "line");
+        config.set("shape.points", 1);
+        config.set("particle.type", "DUST");
+
+        EffectConfigException exception = assertThrows(EffectConfigException.class, () -> EffectConfigParser.defaults().parse(config));
+
+        assertEquals("particle.data", exception.path());
+        assertEquals("Particle DUST requires data of type DustOptions", exception.detail());
     }
 
     private static MemoryConfiguration baseConfig() {
